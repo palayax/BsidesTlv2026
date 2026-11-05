@@ -6,7 +6,7 @@
    Home/End : first/last     S : setup (choose cases)     V : open presenter view
    ========================================================================= */
 (function(){
-const PHASES=[['business','Business'],['infra','AI Infra'],['attack','Attack Path'],['exploit','Exploitation'],['forensics','Forensics'],['mitigate','Mitigation']];
+const PHASES=[['business','Business workflow'],['attack','Attack path & impact'],['forensics','Forensic reach'],['mitigate','Mitigation']];
 const LS_KEY='bsides26-cases';
 const isPresenter=new URLSearchParams(location.search).has('presenter');
 let deck=[], idx=0, step=0, maxStep=0;
@@ -41,7 +41,7 @@ function railHTML(s){
   if(s.caseMeta){
     const cur=PHASES.findIndex(p=>p[0]===s.phase);
     left=PHASES.map((p,k)=>`<span class="ph ${k===cur?'cur':k<cur?'done':''}"><i></i>${p[1]}</span>`).join('<span class="arrow">›</span>');
-  } else left=`<span class="ph cur"><i></i>${s.section||'Forensic Gaps in AI Coding Agents'}</span>`;
+  } else left=`<span class="ph cur"><i></i>${s.section||'The Forensic Gaps in Agentic AI'}</span>`;
   return `<div class="rail">${left}<div class="sp"></div><div class="steps" data-steps></div></div>`;
 }
 function renderInto(root,i,st,withChrome=true){

@@ -1,0 +1,71 @@
+/* 4-screen case kit + intro layouts */
+.kit-who{display:flex;flex-direction:column;gap:14px}
+.kit-grp{background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:14px;padding:14px 18px}
+.kit-h{font-family:var(--mono);font-size:15px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);display:flex;gap:8px;align-items:center;margin-bottom:10px}
+.kit-h.ai{color:var(--ai)} .kit-h.green{color:var(--green)} .kit-h.red{color:var(--red2)}
+.kit-chips{display:flex;flex-wrap:wrap;gap:8px}
+.kit-chips .chip{font-family:var(--sans);font-size:17px;color:var(--text)}
+.kit-ai{display:flex;gap:14px;border:1.5px solid rgba(196,161,255,.55);background:rgba(196,161,255,.07);border-radius:14px;padding:14px 18px;font-size:20px;line-height:1.35;color:#fff}
+.kit-ai .kit-h{margin-bottom:6px}
+
+.kit-steps{display:grid;gap:40px}
+.kit-step{position:relative;border-radius:14px;padding:18px 20px;background:linear-gradient(180deg,var(--panel2),var(--panel));border:1.5px solid var(--line2);display:flex;flex-direction:column}
+.kit-step.attacker{border-color:rgba(255,77,94,.6)} .kit-step.ai{border-color:rgba(196,161,255,.6)} .kit-step.victim{border-color:rgba(34,211,238,.5)}
+.kit-step:not(:last-child)::after{content:"›";position:absolute;right:-31px;top:50%;transform:translateY(-50%);font-size:46px;color:var(--muted);font-weight:300}
+.kit-sn{font-family:var(--mono);font-size:14px;letter-spacing:.08em;color:var(--muted);display:flex;align-items:center;gap:8px}
+.kit-step.attacker .kit-sn{color:var(--red2)} .kit-step.ai .kit-sn{color:var(--ai)} .kit-step.victim .kit-sn{color:var(--cyan)}
+.kit-st{font-size:25px;font-weight:800;color:#fff;margin:10px 0 8px;line-height:1.15}
+.kit-sd{font-size:18px;color:var(--text2);line-height:1.4}
+.kit-tags{margin-top:auto;padding-top:14px;display:flex;flex-wrap:wrap;gap:6px}
+.kit-tags .chip{font-size:14px;padding:2px 8px}
+
+.kit-bia{display:grid;gap:14px}
+.kit-imp{border-radius:12px;padding:14px 18px;background:#0b1523;border:1px solid var(--line);border-top:5px solid var(--line2)}
+.kit-imp.high{border-top-color:var(--red)} .kit-imp.med{border-top-color:var(--amber)} .kit-imp.low{border-top-color:var(--green)} .kit-imp.none{border-top-color:var(--faint)}
+.kit-imp .k{font-family:var(--mono);font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);display:flex;justify-content:space-between;gap:8px}
+.kit-imp .lv{font-weight:700}
+.kit-imp.high .lv{color:var(--red)} .kit-imp.med .lv{color:var(--amber)} .kit-imp.low .lv{color:var(--green)} .kit-imp.none .lv{color:var(--faint)}
+.kit-imp .d{font-size:19px;color:#fff;margin-top:8px;line-height:1.35}
+.kit-status{border-radius:12px;padding:14px 18px;border:1px solid rgba(34,211,238,.4);background:rgba(34,211,238,.05);font-size:18px;line-height:1.45;color:var(--text)}
+
+.kit-assume{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 16px;border-radius:12px;border:1px dashed rgba(52,211,153,.5);background:rgba(52,211,153,.05);font-family:var(--mono);font-size:16px;color:var(--green)}
+.kit-assume .chip{font-family:var(--sans);font-size:16px}
+.kit-col{border-radius:14px;padding:16px 24px;background:linear-gradient(180deg,var(--panel2),var(--panel));border:1.5px solid var(--line2)}
+.kit-col.can{border-color:rgba(52,211,153,.5)} .kit-col.cant{border-color:rgba(255,77,94,.55)}
+.kit-col .kit-h{font-size:17px;margin-bottom:4px}
+.kit-qi{display:flex;gap:14px;padding:13px 0;border-top:1px solid var(--line);align-items:flex-start}
+.kit-qi:nth-child(2){border-top:none}
+.kit-qi .mk{flex:none;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px;margin-top:2px}
+.kit-col.can .mk{background:rgba(52,211,153,.15);color:var(--green)} .kit-col.cant .mk{background:rgba(255,77,94,.15);color:var(--red)}
+.kit-qi .qq{font-size:22px;font-weight:700;color:#fff;line-height:1.25}
+.kit-qi .qa{font-size:17px;color:var(--text2);margin-top:5px;line-height:1.35}
+.kit-qi .qa b{color:var(--text)}
+
+/* larger type on case screens 2-4 so the stage is filled */
+.kit-st{font-size:28px} .kit-sd{font-size:20px}
+.kit-imp .d{font-size:22px} .kit-status{font-size:20px}
+.kit-col{padding:20px 26px;display:flex;flex-direction:column} .kit-col .kit-qi{flex:1;align-items:center} .kit-cols{height:640px}
+.kit-cols .kit-qi .mk{margin-top:0}.kit-col .kit-h{font-size:18px;margin-bottom:8px}
+.kit-qi{padding:18px 0} .kit-qi .qq{font-size:26px} .kit-qi .qa{font-size:20px;margin-top:7px}
+.kit-mit .panel{padding:24px 26px!important;min-height:520px}
+.kit-mit .list{font-size:23px!important;gap:18px!important}
+.kit-foot{display:flex;gap:18px}
+.kit-foot>div{flex:1}
+
+.abs.panel,.abs.kit-col,.abs.callout{position:absolute}
+/* intro */
+.cmp{width:100%;border-collapse:separate;border-spacing:0 8px}
+.cmp th{font-family:var(--mono);font-size:16px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);text-align:left;padding:0 18px 4px}
+.cmp td{padding:12px 18px;font-size:20px;line-height:1.3;background:#0b1523;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.cmp td:first-child{border-left:1px solid var(--line);border-radius:10px 0 0 10px;font-weight:800;color:#fff;font-size:21px;white-space:nowrap}
+.cmp td:last-child{border-right:1px solid var(--line);border-radius:0 10px 10px 0}
+.cmp td.cl{color:var(--text2)} .cmp td.ag{color:#fff;background:rgba(255,77,94,.06)}
+.cmp td .tg{display:inline-block;font-family:var(--mono);font-size:13px;padding:1px 7px;border-radius:5px;margin-right:8px;vertical-align:2px}
+.tg.y{color:var(--green);border:1px solid rgba(52,211,153,.5)} .tg.p{color:var(--amber);border:1px solid rgba(255,176,32,.5)} .tg.n{color:var(--red2);border:1px solid rgba(255,77,94,.5)}
+.concept{display:flex;gap:0;align-items:stretch}
+.concept .cc{flex:1;border-radius:14px;padding:16px 20px;background:linear-gradient(180deg,var(--panel2),var(--panel));border:1.5px solid var(--line2)}
+.concept .ca{display:flex;align-items:center;padding:0 10px;font-size:40px;color:var(--muted)}
+.concept .cc .h{display:flex;gap:10px;align-items:center;font-size:24px;font-weight:800;color:#fff}
+.concept .cc .d{font-size:17px;color:var(--text2);margin-top:8px;line-height:1.35}
+.refs{font-family:var(--mono);font-size:14px;color:var(--cyan);line-height:1.5;word-break:break-all}
+.refs div{display:flex;gap:6px} .refs span{color:var(--muted);white-space:nowrap}

@@ -87,6 +87,8 @@ function icon(name,size=28,color){
     return `<svg class="ico" width="${size}" height="${size}" viewBox="0 0 24 24" fill="${c}"><path d="${ICONS[name]}"/></svg>`;
   }
   if(name==='postmark') return `<svg class="ico" width="${size}" height="${size}" viewBox="0 0 24 24"><rect x="1" y="1" width="22" height="22" rx="5" fill="#ffde00"/><path d="M7 18V6h5.2a3.8 3.8 0 0 1 0 7.6H10V18z" fill="#000"/></svg>`;
+  const LT={drift:['D','#2563eb'],salesloft:['S','#0f766e'],copilot:['C','#6d28d9']};
+  if(LT[name]) return `<svg class="ico" width="${size}" height="${size}" viewBox="0 0 24 24"><rect x="1" y="1" width="22" height="22" rx="6" fill="${LT[name][1]}"/><text x="12" y="17" font-family="Inter,Segoe UI,sans-serif" font-weight="800" font-size="14" text-anchor="middle" fill="#fff">${LT[name][0]}</text></svg>`;
   if(name==='bsides') return `<svg class="ico" width="${size}" height="${size}" viewBox="0 0 24 24"><rect x="1" y="1" width="22" height="22" rx="5" fill="#ff4d5e"/><text x="12" y="17" font-family="Inter" font-weight="800" font-size="13" text-anchor="middle" fill="#fff">B</text></svg>`;
   if(name==='crowdstrike'||name==='edr') return glyph('shield',size,color||'#ff4d5e');
   const g=G[name]||G.q;
