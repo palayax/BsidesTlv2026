@@ -13,7 +13,8 @@ const BRAND_COLORS={anthropic:'#d97757',claude:'#d97757',openai:'#ffffff',github
   bitcoin:'#f7931a',ethereum:'#a7b4ff',gmail:'#ea4335',jira:'#0052cc',cline:'#ffffff',githubcopilot:'#ffffff',google:'#4285f4',macos:'#ffffff',neon:'#00e599',
   supabase:'#3fcf8e',elastic:'#00bfb3',paloaltonetworks:'#fa582d',cloudflare:'#f38020',discord:'#5865f2',python:'#3776ab',javascript:'#f7df1e',typescript:'#3178c6',
   telegram:'#26a5e4',vscodium:'#2f80ed',kalilinux:'#557c94',zapier:'#ff4f00',vercel:'#ffffff',visualstudiocode:'#3ca2f2',amazonaws:'#ff9900',amazon:'#ff9900',
-  slack:'#e01e5a',microsoft:'#ffffff',salesforce:'#00a1e0',windows:'#0078d6',amazons3:'#569a31'};
+  slack:'#e01e5a',microsoft:'#ffffff',salesforce:'#00a1e0',windows:'#0078d6',amazons3:'#569a31',
+  microsoftoutlook:'#0078d4',microsoftsharepoint:'#03a3a8',microsoftteams:'#7b83eb',microsoftonedrive:'#0a84ff',torproject:'#b57edc',snowflake:'#29b5e8',googlechrome:'#4285f4'};
 
 // Generic glyphs (stroke icons, 24x24)
 const G={
@@ -87,7 +88,9 @@ function icon(name,size=28,color){
     return `<svg class="ico" width="${size}" height="${size}" viewBox="0 0 24 24" fill="${c}"><path d="${ICONS[name]}"/></svg>`;
   }
   if(name==='postmark') return `<svg class="ico" width="${size}" height="${size}" viewBox="0 0 24 24"><rect x="1" y="1" width="22" height="22" rx="5" fill="#ffde00"/><path d="M7 18V6h5.2a3.8 3.8 0 0 1 0 7.6H10V18z" fill="#000"/></svg>`;
-  const LT={drift:['D','#2563eb'],salesloft:['S','#0f766e'],copilot:['C','#6d28d9']};
+  const LT={drift:['D','#2563eb'],salesloft:['S','#0f766e']};
+  if(name==='copilot') return `<svg class="ico" width="${size}" height="${size}" viewBox="0 0 24 24"><defs><linearGradient id="cpg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2f80ed"/><stop offset=".5" stop-color="#8b5cf6"/><stop offset="1" stop-color="#f59e0b"/></linearGradient></defs><rect x="1" y="1" width="22" height="22" rx="6" fill="url(#cpg)"/><path d="M12 5l1.6 4.4L18 11l-4.4 1.6L12 17l-1.6-4.4L6 11l4.4-1.6z" fill="#fff"/></svg>`;
+  if(name==='agentforce') return `<svg class="ico" width="${size}" height="${size}" viewBox="0 0 24 24"><rect x="1" y="1" width="22" height="22" rx="6" fill="#0b5cab"/><rect x="6" y="9" width="12" height="9" rx="2.5" fill="none" stroke="#fff" stroke-width="1.6"/><path d="M12 5.5V9M9.5 13h.01M14.5 13h.01" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>`;
   if(LT[name]) return `<svg class="ico" width="${size}" height="${size}" viewBox="0 0 24 24"><rect x="1" y="1" width="22" height="22" rx="6" fill="${LT[name][1]}"/><text x="12" y="17" font-family="Inter,Segoe UI,sans-serif" font-weight="800" font-size="14" text-anchor="middle" fill="#fff">${LT[name][0]}</text></svg>`;
   if(name==='bsides') return `<svg class="ico" width="${size}" height="${size}" viewBox="0 0 24 24"><rect x="1" y="1" width="22" height="22" rx="5" fill="#ff4d5e"/><text x="12" y="17" font-family="Inter" font-weight="800" font-size="13" text-anchor="middle" fill="#fff">B</text></svg>`;
   if(name==='crowdstrike'||name==='edr') return glyph('shield',size,color||'#ff4d5e');
@@ -126,8 +129,8 @@ function diagram(o){
   (o.zones||[]).forEach(z=>{html+=`<div class="zone ${z.kind||''}" style="left:${z.x}px;top:${z.y}px;width:${z.w}px;height:${z.h}px"${A(z)}><div class="zl">${z.icon?icon(z.icon,18):''}${z.label||''}</div></div>`;});
   html+=svg;
   (o.nodes||[]).forEach(n=>{
-    html+=`<div class="node ${n.kind||''} ${n.compact?'compact':''}" style="left:${n.x}px;top:${n.y}px;width:${n.w}px;height:${n.h}px"${A(n)}>
-      ${n.icon?tile(n.icon,n.iconSize||52,n.iconColor):''}<div style="min-width:0"><div class="nt">${n.title||''}</div>${n.sub?`<div class="ns">${n.sub}</div>`:''}</div>${n.badge?`<span class="badge">${n.badge}</span>`:''}</div>`;
+    html+=`<div class="node ${n.kind||''} ${n.compact?'compact':''} ${n.big?'big':''}" style="left:${n.x}px;top:${n.y}px;width:${n.w}px;height:${n.h}px"${A(n)}>
+      ${n.icon?tile(n.icon,n.iconSize||(n.big?74:52),n.iconColor):''}<div style="min-width:0"><div class="nt">${n.title||''}</div>${n.sub?`<div class="ns">${n.sub}</div>`:''}</div>${n.badge?`<span class="badge">${n.badge}</span>`:''}</div>`;
   });
   html+=labels;
   (o.steps||[]).forEach(s=>{html+=`<div class="stepno" style="left:${s.x}px;top:${s.y}px"${A(s)}>${s.n}</div>`;});

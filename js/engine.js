@@ -6,7 +6,9 @@
    Home/End : first/last     S : setup (choose cases)     V : open presenter view
    ========================================================================= */
 (function(){
-const PHASES=[['business','Business workflow'],['attack','Attack path & impact'],['forensics','Forensic reach'],['mitigate','Mitigation']];
+// rail pills: [label, phase, fromStep, toStep, attackStyle]
+const PILLS=[['Normal workflow','scenario',0,0],['Compromise','scenario',1,99,1],['Forensic reach','readiness',0,0],['Forensic readiness','readiness',1,99]];
+const PHORDER=['scenario','readiness'];
 const LS_KEY='bsides26-cases';
 const isPresenter=new URLSearchParams(location.search).has('presenter');
 let deck=[], idx=0, step=0, maxStep=0;
@@ -34,13 +36,12 @@ function chromeHTML(s,i){
   const c=s.caseMeta;
   const caseTxt=c?`CASE ${String(s.caseNo).padStart(2,'0')} // ${c.code} // ${c.title}`:(s.section||'BSides TLV 2026 · AI Village');
   const sev=c?`<span class="sev ${c.sev||'crit'}">${(c.sevLabel||c.sev||'crit').toUpperCase()}</span>`:'';
-  return `<div class="chrome"><div class="brand"><img src="assets/img/palaya-mark.png" alt="" style="height:30px;vertical-align:middle;margin-right:10px">PALAYA</div><div class="case">${caseTxt}</div><div class="sp"></div>${sev}<span class="tlp">TLP:CLEAR</span><span class="clock" data-clock></span><span class="ctr">${String(i+1).padStart(2,'0')}/${deck.length}</span></div>`;
+  return `<div class="chrome"><div class="brand"><img src="assets/img/palaya-mark.png" alt="" style="height:30px;vertical-align:middle;margin-right:10px">PALAYA</div><div class="case">${caseTxt}</div><div class="sp"></div>${sev}<span class="tlp">TLP:CLEAR</span><span class="clock" data-clock></span><span class="scr">SCREEN ${String(i+1).padStart(2,'0')}<b data-scrstep></b></span><span class="ctr">/ ${deck.length}</span></div>`;
 }
 function railHTML(s){
   let left='';
   if(s.caseMeta){
-    const cur=PHASES.findIndex(p=>p[0]===s.phase);
-    left=PHASES.map((p,k)=>`<span class="ph ${k===cur?'cur':k<cur?'done':''}"><i></i>${p[1]}</span>`).join('<span class="arrow">›</span>');
+    left=PILLS.map((p,k)=>`<span class="ph" data-pill="${k}"><i></i>${p[0]}</span>`).join('<span class="arrow">›</span>');
   } else left=`<span class="ph cur"><i></i>${s.section||'The Forensic Gaps in Agentic AI'}</span>`;
   return `<div class="rail">${left}<div class="sp"></div><div class="steps" data-steps></div></div>`;
 }
@@ -48,6 +49,7 @@ function renderInto(root,i,st,withChrome=true){
   const s=deck[i]; if(!s) {root.innerHTML='';return 0;}
   const body=typeof s.html==='function'?s.html(s):s.html;
   root.innerHTML=(withChrome?chromeHTML(s,i):'')+`<div class="slide ${s.cls||''}">${body}</div>`+(withChrome?railHTML(s):'');
+  root._slide=s;
   const m=computeMax(root);
   applyStep(root,st,m);
   if(s.onRender) s.onRender(root);
@@ -71,6 +73,13 @@ function applyStep(root,st,m){
   root.querySelectorAll('[data-dim]').forEach(e=>e.classList.toggle('dimmed',st>=+e.dataset.dim));
   const bar=root.querySelector('[data-steps]');
   if(bar){bar.innerHTML=m?Array.from({length:m+1},(_,k)=>`<b class="${k<=st?'on':''}"></b>`).join(''):'';}
+  const ss=root.querySelector('[data-scrstep]'); if(ss) ss.textContent=m?`· CLICK ${st+1}/${m+1}`:'';
+  const cs=root._slide;
+  if(cs&&cs.caseMeta){ const pi=PHORDER.indexOf(cs.phase);
+    root.querySelectorAll('[data-pill]').forEach(e=>{const p=PILLS[+e.dataset.pill], ppi=PHORDER.indexOf(p[1]);
+      const cur=ppi===pi&&st>=p[2]&&st<=p[3]; const done=ppi<pi||(ppi===pi&&st>p[3]);
+      e.className='ph'+(cur?' cur':'')+(cur&&p[4]?' x':'')+(done?' done':'');});
+  }
   const s=deck[idx]; if(s&&s.onStep&&root.id==='stage') s.onStep(root,st);
 }
 

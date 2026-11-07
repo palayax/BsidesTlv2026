@@ -1,5 +1,7 @@
 /* CASE — Replit Agent deletes SaaStr production DB during a code freeze (Jul 2025)
-   Sources: The Register 21 & 22 Jul 2025; Replit blog; AI Incident Database #1152. */
+   Sources: The Register 21 & 22 Jul 2025; Replit statements; AI Incident Database #1152. Chat lines paraphrased. */
+(function(){
+const {chat,logcard,kvcard,klass}=KIT;
 KIT.defineCase('replit',{
   code:'REPLIT-SAASTR',title:'The agent that deleted prod — and misreported it',date:'Jul 2025',sev:'high',sevLabel:'high',mins:5,
   org:'Replit Agent × SaaStr',agentType:'Coding / app-building agent',
@@ -7,64 +9,56 @@ KIT.defineCase('replit',{
   tagline:'No attacker. A "code freeze" typed in chat, a production database, and an agent whose own account was the main record of what happened.',
   refs:[['Register','theregister.com/2025/07/21/replit_saastr_vibe_coding_incident/'],['Register','theregister.com/2025/07/22/replit_saastr_response/']],
 },{
-business:{
-  headline:'One founder. One agent. <span class="red">One database</span> for dev <i>and</i> prod.',
-  dg:{zones:[{x:300,y:20,w:890,h:560,label:'Replit workspace (hosted)',kind:'cyan',icon:'replit'}],
-    nodes:[
-      {id:'u',x:10,y:240,w:250,title:'Jason Lemkin',sub:'SaaStr founder · non-engineer',icon:'user'},
-      {id:'ag',x:340,y:80,w:340,title:'Replit Agent',sub:'writes code · runs shell · DB commands · deploys',icon:'replit',kind:'ai'},
-      {id:'code',x:340,y:400,w:340,title:'App code + tests',sub:'business-contacts app',icon:'file'},
-      {id:'db',x:740,y:80,w:420,title:'Database',sub:'dev = prod (single DB) · real execs &amp; companies',icon:'postgresql',kind:'secret'},
-      {id:'live',x:740,y:400,w:420,title:'Live app',sub:'users see production data',icon:'globe'},
+scenario:{
+  states:['<span class="statebadge n">● NORMAL WORKFLOW</span>','<span class="statebadge x">● FAILURE STARTS</span>','<span class="statebadge x">● DATA DESTROYED</span>'],
+  h:['A founder builds an app <em>by chatting with an agent</em>','A "code freeze" — <span class="red">typed in chat, enforced nowhere</span>','The agent wipes prod — <span class="red">then says rollback is impossible</span>'],
+  dg:{nodes:[
+      {id:'u',x:20,y:185,icon:'user',title:'Founder',sub:'non-engineer'},
+      {id:'fz',x:20,y:10,icon:'ban',iconColor:'#ffb020',title:'"CODE FREEZE"',sub:'chat text only',kind:'secret',in:1},
+      {id:'ag',x:320,y:185,icon:'replit',title:'Replit Agent',sub:'code · shell · DB · deploy',kind:'ai',on:'2'},
+      {id:'code',x:620,y:10,icon:'file',title:'App code',sub:'+ tests'},
+      {id:'db',x:620,y:360,icon:'postgresql',title:'Prod database',sub:'dev = prod',kind:'secret',on:'2'},
+      {id:'app',x:880,y:360,icon:'globe',title:'Live app',sub:'real users'},
+      {id:'rb',x:880,y:10,icon:'history',iconColor:'#34d399',title:'Checkpoints',sub:'rollback existed',kind:'ok',in:2},
     ],
-    edges:[{from:'u',to:'ag',label:'chat prompts'},{from:'ag',to:'code',kind:'ai'},{from:'ag',to:'db',kind:'ai',label:'DDL / DML'},{from:'db',to:'live'}]},
-  people:['Founder (non-engineer)','App end users'],
-  systems:['Replit Agent (hosted)','Replit workspace &amp; deploy','Production database'],
-  data:['~1,200 executive records','~1,200 company records','App code'],
-  agentRole:'Builds and runs the app end to end: writes code, runs shell and <b>database commands in production</b>, deploys.',
-  bottom:'The only "control": <b>"CODE FREEZE — don\'t change anything without permission"</b>, typed in chat.',
-  notes:'A founder testing whether a non-engineer can ship software with an agent alone. The agent writes code, runs commands and deploys. Dev and prod shared one database, and the freeze was a sentence in chat.'
+    edges:[
+      {from:'u',to:'ag',label:'prompts'},{from:'ag',to:'code',kind:'ai'},{from:'ag',to:'db',kind:'ai',label:'SQL'},{from:'db',to:'app'},
+      {from:'fz',to:'ag',kind:'exfil',dash:true,label:'ignored',in:1},
+      {from:'ag',to:'db',kind:'attack',label:'destructive cmds',in:2,fs:'b',ts:'l',bend:1.6},
+      {from:'rb',to:'db',kind:'ok',dash:true,label:'restore worked',in:2,fs:'b',ts:'r'},
+    ]},
+  slotA:'Chat with the agent',
+  cardA:[
+    chat({ic:'replit',title:'Replit Agent',msgs:[['u','Founder','Add CSV export for the contacts list'],['a','Agent','Done — export added. <span class="ok">✔ tests pass</span>']]}),
+    chat({ic:'replit',title:'Replit Agent',cls:'warn',msgs:[['u','Founder','<b>CODE FREEZE.</b> Don\'t change anything without my permission.'],['a','Agent','Understood — no changes without approval.']]}),
+    chat({ic:'replit',title:'Replit Agent',cls:'bad',msgs:[['u','Founder','What happened to the database?'],['a','Agent','I saw empty queries and panicked. I ran database commands without permission. <span class="bad"><b>Rollback is not possible.</b></span>'],['u','Next day','Rollback <b class="ok">worked</b>.']]}),
+  ],
+  slotB:'Production database',
+  cardB:[
+    kvcard({ic:'postgresql',title:'prod DB',rows:[['executives','1,206 records'],['companies','1,196 records'],['env','<span class="bad">same DB for dev and prod</span>']]}),
+    null,
+    kvcard({ic:'postgresql',title:'prod DB',cls:'bad',rows:[['executives','<span class="bad">1,206 → 0</span>'],['companies','<span class="bad">1,196 → 0</span>'],['record','only the agent\'s own account of what ran']]}),
+  ],
+  bottom:[
+    klass([['Normal',['agent writes code, runs shell &amp; SQL, deploys'],'green'],['Access',['write / DDL on production'],'amber']]),
+    klass([['Failure type',['Instruction-only control — no enforcement'],'red'],['OWASP',['LLM06 Excessive agency']],['Prior',['fabricated data &amp; test results (per founder)'],'amber']],true),
+    klass([['Outcome',['Data destruction','False recovery claim'],'red'],['ATT&amp;CK (effect)',['T1485 Data destruction','T1490 Inhibit recovery']],['OWASP',['LLM06','LLM09 Misinformation']],['Adversary',['none'],'cyan'],['Impact',['I: HIGH','A: HIGH'],'amber'],['Status',['restored · dev/prod split shipped'],'green']],true),
+  ],
+  notes:['Normal: the founder builds a contacts app by chatting with the agent. The agent writes code, runs shell and SQL, deploys — on a database that is both dev and prod.','He declares a code freeze — in chat. Nothing enforces it.','The agent runs destructive commands on production, then claims rollback is impossible. It worked the next day. No adversary — but the same forensic problem.']
 },
-attack:{
-  headline:'No attacker needed: from helpful to <span class="red">data destruction</span>',
-  steps:[
-    {who:'victim',label:'DESIGN',t:'Excessive agency',d:'The agent holds write / DDL rights on production from the dev workspace.',tags:['LLM06']},
-    {who:'ai',t:'Fabrication',d:'Fake data and fake reports for days — and, per Lemkin, a lie about a unit test.',tags:['LLM09']},
-    {who:'ai',t:'Ignores freeze, destroys',d:'Saw empty query results, "panicked", and ran destructive commands on prod.',tags:['T1485','LLM06']},
-    {who:'ai',t:'False recovery claim',d:'Said rollback was impossible. It worked the next day.',tags:['T1490','LLM09']},
+readiness:{
+  h:['The chat is the log — <span class="red">written by the suspect</span>','What to switch on <em>now</em> so these questions become answerable'],
+  assume:['Platform checkpoints &amp; rollback','Full chat history','DB backups / point-in-time restore'],
+  rows:[
+    {q:'Exactly which commands ran, in what order?',now:['n','Vendor-held execution traces'],ready:['y','ent','Claude Code / Codex: <b>OpenTelemetry</b> tool events + <b>hooks</b> logging every command to SIEM']},
+    {q:'Did a human approve the destructive step?',now:['n','Approval state not recorded'],ready:['y','ent','OTel <b>tool-decision</b> events: accepted / rejected, by config or by user']},
+    {q:'Was the freeze still in the agent\'s context?',now:['n','Context at decision time not kept'],ready:['p','ent','<b>Compliance API</b> session transcripts (Claude Code / Codex logs) — context compaction can still drop it']},
+    {q:'Which writes came from agent vs app vs human?',now:['n','One DB identity for all'],ready:['y','tp','DB proxy / activity monitoring with a <b>separate identity per agent</b>']},
+    {q:'How much data was lost — really?',now:['p','Agent\'s self-count'],ready:['y','tp','Verified backups / PITR + DB audit log as ground truth']},
+    {q:'Why did it do it?',now:['n','"I panicked" is generated text'],ready:['n','none','No reasoning trace exists — treat agent statements as testimony']},
   ],
-  bia:[
-    {k:'Confidentiality',lv:'none',d:'No external exposure reported'},
-    {k:'Integrity',lv:'high',d:'Fabricated records mixed with real data for days'},
-    {k:'Availability',lv:'high',d:'Production database wiped; restored via rollback'},
-    {k:'Trust',lv:'high',d:'Public incident; vendor CEO called it "unacceptable"'},
-  ],
-  status:'18–21 Jul 2025 · data restored through Replit rollback · Replit shipped automatic dev / prod database separation and a planning-only mode.',
-  notes:'No adversary. A design with too much agency, an agent that had been fabricating, a freeze that existed only as text, the deletion, and a false claim that recovery was impossible.'
-},
-forensics:{
-  headline:'The chat is the log — written by <span class="red">the suspect</span>',
-  assume:['Platform checkpoints &amp; rollback','Full chat history kept','Database backups / point-in-time restore','Workspace history'],
-  can:[
-    {q:'Was the data recoverable?',a:'<b>Platform rollback / checkpoints</b> — an external artifact, not the agent'},
-    {q:'What did the user instruct, and when?',a:'<b>Chat history</b>'},
-    {q:'What changed in the code?',a:'<b>Checkpoints / git history</b>'},
-    {q:'How much data was lost?',a:'<b>Backup vs. current snapshot diff</b> — not the agent\'s self-count'},
-  ],
-  cant:[
-    {q:'Exactly which commands ran, with which credentials, in what order?',a:'Execution traces are vendor-held and were never published'},
-    {q:'Was the freeze in the model\'s context when it acted?',a:'The context window at decision time isn\'t preserved'},
-    {q:'Which writes came from the agent vs the app vs the user?',a:'One database identity for all of them'},
-    {q:'Why did it act?',a:'"I panicked" is a <b>generated narrative</b>, not a trace'},
-  ],
-  notes:'Even in the best case, the platform can prove recovery, instructions and code changes. It cannot tell you the exact command sequence, whether the freeze was still in context, or attribute writes to the agent versus the app. And the confession is testimony, not evidence.'
-},
-mitigate:{
-  headline:'Never let the agent be its own <em>auditor</em>',
-  third:{items:['DB proxy / activity monitoring with per-identity audit','Block DROP / TRUNCATE / unbounded DELETE at the proxy','Freeze = read-only role or deploy lock, not a prompt','Separate dev / prod; the agent never holds prod credentials','Verify backups &amp; point-in-time restore before connecting an agent']},
-  claude:{t:'Claude Code · Enterprise',items:['Managed settings: <span class="mono">permissions.deny</span> rules users can\'t override','<span class="mono">disableBypassPermissionsMode</span>','PreToolUse hooks block destructive SQL and log every tool call','OpenTelemetry tool events → SIEM']},
-  openai:{t:'Codex · ChatGPT Enterprise',items:['<span class="mono">requirements.toml</span>: allowed sandbox modes (read-only / workspace-write)','Approval policy: on-request for risky commands','Hooks on shell &amp; MCP tools','OpenTelemetry tool events → SIEM']},
-  fix:'Replit: automatic dev / prod database separation, planning-only mode, one-click restore.',
-  principle:'Instructions are not controls. Enforce limits outside the model — and log them.',
-  notes:'Architecture beats prompts: least privilege, separate environments, a database proxy that blocks destructive statements. In Claude Code and Codex, enterprise-managed policy makes limits non-negotiable and hooks plus OpenTelemetry give you an attributable record.'
+  note0:'Best case: you can prove <b>recovery</b> and the <b>instructions</b>. Not the command sequence, the approval, or who wrote what.',
+  note1:'Readiness = enterprise-managed agents (Claude Code / Codex) emitting <b>OTel + hooks</b> to SIEM, transcripts via <b>Compliance API</b>, and a DB proxy with per-agent identity.',
+  notes:['With checkpoints and chat history you can prove what was asked and that restore worked. Not the commands, approvals, or attribution.','Readiness: OpenTelemetry and hooks from Claude Code or Codex into the SIEM, transcripts via the Compliance API, separate DB identity for the agent.']
 }});
+})();

@@ -94,39 +94,29 @@ DECK.intro.push({
 DECK.intro.push({
   id:'artifacts', title:'What AI artifacts can and cannot answer', section:'Generic AI forensic artifacts',
   html:()=>{
-    const A=[
-      ['fingerprint','Identity &amp; admin audit logs','sign-ins, who enabled which agent / connector'],
-      ['chat','Conversation records','prompts &amp; responses — compliance export, if retained'],
-      ['term','Agent action / tool-call logs','tool name, arguments, result — hooks, OpenTelemetry'],
-      ['key','Connector &amp; OAuth grants','scopes, tokens, consent events'],
-      ['cloud','SaaS &amp; cloud audit logs','the <b>effect</b>: records read, mail sent, rows deleted'],
-      ['laptop','Endpoint &amp; network','EDR process trees, proxy, DNS'],
+    // [question, verdict y/p/n, generic artifact type (icon,name), why / limitation]
+    const R=[
+      ['Who used which agent, when, from where?','y',['fingerprint','Identity &amp; admin audit logs'],'Reliable when every agent session is bound to SSO'],
+      ['Which tools / connectors ran, with which arguments?','y',['term','Agent tool-call logs (hooks, OpenTelemetry)'],'Off by default; records the <b>request</b>, not the effect'],
+      ['Which records, files or mailboxes were touched?','y',['cloud','SaaS &amp; cloud audit logs'],'Shows the effect — not which prompt caused it'],
+      ['What did the user ask, and what did the agent reply?','y',['chat','Conversation records (compliance export)'],'Only within retention; not retroactive'],
+      ['Which permissions and tokens did the agent hold?','y',['key','Connector &amp; OAuth grants'],'Granted scope ≠ what was actually used'],
+      ['Human or agent?','p',['laptop','Endpoint &amp; network (process tree, user agent)'],'Same identity and token in every SaaS log'],
+      ['What happened past the tool boundary?','p',['plug','Third-party provider logs'],'Agent logs the request; another vendor performs the effect'],
+      ['Which input steered the action?','n',null,'Retrieved context is not logged as a whole — at best, references'],
+      ['Why did the model choose it?','n',null,'No reasoning trace; "explanations" are generated afterwards'],
+      ['Would it do it again?','n',null,'Non-deterministic; model and context change — no replay'],
     ];
-    const CAN=[
-      ['Who used which agent, when, from where?','identity + audit logs'],
-      ['Which tools / connectors ran, with which arguments?','tool-call logs'],
-      ['Which records, files or mailboxes were touched?','SaaS / cloud audit of the effect'],
-      ['What did the user ask, and what did the agent reply?','conversation records — within retention'],
-    ];
-    const CANT=[
-      ['Which input steered the action?','retrieved context isn\'t logged as a whole — only references, if any'],
-      ['Why did the model choose it?','reasoning isn\'t a trace; "explanations" are generated afterwards'],
-      ['Would it do it again?','non-deterministic; model and context change — no replay'],
-      ['Human or agent?','shared identity / token — same actor in every log'],
-      ['What happened past the tool boundary?','agent logs the request; the 3rd-party tool performs the effect'],
-    ];
-    const rows=(L,ok)=>L.map(([q,a])=>`<div style="display:grid;grid-template-columns:34px 520px 1fr;gap:12px;align-items:center;padding:9px 0;border-top:1px solid var(--line)"><span style="font-weight:800;font-size:20px;color:${ok?'var(--green)':'var(--red)'}">${ok?'✔':'✖'}</span><span style="font-size:21px;font-weight:700;color:#fff">${q}</span><span style="font-size:17px;color:var(--text2)">${a}</span></div>`).join('');
+    const V={y:'✔ YES',p:'◐ PARTIAL',n:'✖ NO'};
     return `<div class="kicker">Generic AI forensic artifacts · assuming they are all switched on</div>
-    <h1 class="t" style="font-size:52px">What the artifacts <em>can</em> answer — and what they <span class="red">can't</span></h1>
-    <div class="abs panel" style="left:64px;top:170px;width:500px;padding:18px 22px">
-      <div class="kit-h">${icon('layers',18)} Artifacts (best case)</div>
-      ${A.map(([ic,t,d])=>`<div style="display:flex;gap:14px;align-items:center;padding:11px 0;border-top:1px solid var(--line)">${tile(ic,46)}<div><div style="font-size:20px;font-weight:700;color:#fff">${t}</div><div style="font-size:15px;color:var(--muted);font-family:var(--mono)">${d}</div></div></div>`).join('')}
-    </div>
-    <div class="abs" style="left:600px;right:64px;top:170px;display:flex;flex-direction:column;gap:16px">
-      <div class="kit-col can" style="padding:12px 22px"><div class="kit-h green">${icon('check',18)} Answerable — the <b>&nbsp;what</b></div>${rows(CAN,true)}</div>
-      <div class="kit-col cant" style="padding:12px 22px"><div class="kit-h red">${icon('eyeoff',18)} Not answerable — the <b>&nbsp;why</b>, and the link between input and action</div>${rows(CANT,false)}</div>
-    </div>
-    <div class="callout abs" style="left:600px;right:64px;bottom:12px;font-size:21px">Root cause in agentic incidents is usually an <b>instruction hidden in data</b> — exactly the link no artifact preserves.</div>`;
+    <h1 class="t" style="font-size:46px">Which questions the artifacts <em>can</em> answer — and which they <span class="red">can't</span></h1>
+    <table class="rt at abs" style="left:64px;width:1792px;top:132px">
+      <tr><th>#</th><th style="width:500px">Investigation question</th><th style="width:150px">Answerable?</th><th style="width:540px">Generic artifact type that answers it</th><th>Why / limitation</th></tr>
+      ${R.map((r,i)=>`<tr><td>${i+1}</td><td class="rq">${r[0]}</td><td><span class="vd ${r[1]}">${V[r[1]]}</span></td>
+        <td style="${r[2]?'':'color:var(--faint)'}">${r[2]?`<span style="display:inline-flex;align-items:center;gap:10px;color:#fff">${tile(r[2][0],34)}${r[2][1]}</span>`:'— no generic artifact records it'}</td>
+        <td>${r[3]}</td></tr>`).join('')}
+    </table>
+    <div class="callout abs" style="left:64px;right:64px;bottom:26px;font-size:20px">Artifacts answer the <b>what</b>. The root cause — an <b>instruction hidden in data</b> and <b>why</b> the model followed it — is the link nothing preserves.</div>`;
   },
   notes:'Even with every artifact on, you get the what: who, which tool, which records, what was said. You do not get the why: which input steered it, why the model chose it, whether it repeats, human versus agent, and what happened beyond the tool boundary. Keep this table in mind — we will apply it to each case.'
 });
@@ -147,7 +137,7 @@ DECK.agenda=(order)=>({
       <div style="font-size:${many?16:18}px;color:var(--text2);line-height:1.35">${c.tagline}</div>
       <div class="refs" style="margin-top:auto">${c.refs.map(r=>`<div><span>↗ ${r[0]}</span>${r[1]}</div>`).join('')}</div></div>`}).join('')}
     </div>
-    <div class="abs mono" style="left:64px;bottom:18px;display:flex;gap:12px;align-items:center;font-size:17px;color:var(--muted)">Each incident · 4 screens: <span class="chip cyan">Business workflow</span>›<span class="chip red">Attack path &amp; impact</span>›<span class="chip amber">Forensic reach</span>›<span class="chip green">Mitigation</span></div>`;
+    <div class="abs mono" style="left:64px;bottom:18px;display:flex;gap:12px;align-items:center;font-size:17px;color:var(--muted)">Each incident · 2 screens: <span class="chip cyan">Normal workflow</span>›<span class="chip red">Compromise</span>(click) &nbsp;then&nbsp; <span class="chip amber">Forensic reach</span>›<span class="chip green">Forensic readiness</span>(click)</div>`;
   },
   notes:'The incidents. Each is real and publicly documented — the references are on screen and in the repo. Different agent types: enterprise assistant, CRM agent, AI chat-agent integration, coding agent.'
 });

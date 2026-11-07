@@ -2,13 +2,15 @@
 
 Interactive, clicker-driven talk by **Dor Amit (PALAYA)**. Live: https://palayax.github.io/BsidesTlv2026/
 
-## Structure (one click = one screen)
+## Structure (each click is numbered in the top bar: SCREEN NN · CLICK x/y)
 1. Concept + speaker
 2. Statistics + classical DFIR vs agentic-AI DFIR — which questions each can answer
-3. Generic AI forensic artifacts — what they can / cannot answer, and why
+3. One comparison table: investigation question → answerable? → generic artifact type → why / limitation
 4. The incidents — logos, dates, public references
 
-Each incident = 4 screens: **Business workflow → Attack path, TTPs & business impact → Forensic reach (best-practice config assumed) → Mitigation** (3rd-party controls, Claude Enterprise, ChatGPT Enterprise).
+Each incident = 2 screens:
+- **Workflow → compromise** (3 clicks): normal business workflow with a realistic example → attacker plants / failure starts → compromise outcome with attack type, MITRE ATLAS / ATT&CK, OWASP LLM, CVE and impact.
+- **Forensic reach → readiness** (2 clicks): business questions vs what generic forensics answers today (best practice assumed) → the forensic-readiness artifact that makes each answerable (3rd-party, or Claude / ChatGPT Enterprise: Compliance API, audit logs, OpenTelemetry, hooks).
 
 | Case | Agent type | Primary sources |
 |---|---|---|
