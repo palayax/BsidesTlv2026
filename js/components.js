@@ -102,27 +102,41 @@ function tile(name,size=56,color){return `<span class="logo-tile" style="width:$
 function icons(list,size){return list.map(n=>icon(n,size)).join(' ')}
 
 /* ---------- diagram ---------- */
-// opts: {x,y,w,h, zones:[{x,y,w,h,label,kind,icon}], nodes:[{id,x,y,w,h,icon,title,sub,kind,in,on,...}], edges:[{from,to,kind,label,in,on,fs,ts,bend,lx,ly,dash}], pins:[{x,y,n,in,blind}], steps:[{x,y,n,in}]}
+// opts: {x,y,w,h, calmAt, zones:[{x,y,w,h,label,kind,icon}], nodes:[{id,x,y,w,h,icon,title,sub,kind,in,on,dim,...}],
+//        edges:[{from,to,kind,label,n,in,on,dim,fs,ts,fo,tp,bend,lx,ly,dash,both}], pins:[{x,y,n,in,blind}], steps:[{x,y,n,in}]}
+//   n      : story-order number drawn as a badge on the edge (neutral for normal flow, red for attack / exfil)
+//   fo/tp  : shift the from / to port along its side (px) so two edges can share a side
+//   both   : arrowheads at both ends
+//   calmAt : step at which normal-flow edges stop their moving-dash animation
+//   attack / exfil edges that appear on a click (`in`) get a dot that travels the path once when they appear
+const HOT={attack:1,exfil:1};
 function diagram(o){
   const W=o.w, H=o.h, N={};
   (o.nodes||[]).forEach(n=>{n.w=n.w||250;n.h=n.h||86;N[n.id]=n;});
-  const side=(n,s)=>{const cx=n.x+n.w/2, cy=n.y+n.h/2;
-    return s==='l'?[n.x,cy,-1,0]:s==='r'?[n.x+n.w,cy,1,0]:s==='t'?[cx,n.y,0,-1]:[cx,n.y+n.h,0,1];};
+  const side=(n,s,off=0)=>{const cx=n.x+n.w/2, cy=n.y+n.h/2;
+    return s==='l'?[n.x,cy+off,-1,0]:s==='r'?[n.x+n.w,cy+off,1,0]:s==='t'?[cx+off,n.y,0,-1]:[cx+off,n.y+n.h,0,1];};
   const auto=(a,b)=>{const dx=(b.x+b.w/2)-(a.x+a.w/2), dy=(b.y+b.h/2)-(a.y+a.h/2);
     if(Math.abs(dx)*0.6>Math.abs(dy)) return dx>0?['r','l']:['l','r']; return dy>0?['b','t']:['t','b'];};
   let svg=`<svg class="edges" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}"><defs>`;
-  for(const [k,c] of Object.entries({flow:'#3d6390',attack:'#ff4d5e',exfil:'#ffb020',ai:'#c4a1ff',ok:'#34d399',plain:'#26405f'}))
+  for(const [k,c] of Object.entries({flow:'#4f7bb0',attack:'#ff4d5e',exfil:'#ffb020',ai:'#c4a1ff',ok:'#34d399',plain:'#26405f'}))
     svg+=`<marker id="ar-${k}" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="${c}"/></marker>`;
   svg+='</defs>';
-  let labels='';
+  let labels='', dots='';
   (o.edges||[]).forEach(e=>{
     const a=N[e.from], b=N[e.to]; if(!a||!b) return;
-    const [sa,sb]=auto(a,b); const p=side(a,e.fs||sa), q=side(b,e.ts||sb);
-    const k=e.kind||'flow'; const d=Math.max(60,Math.hypot(q[0]-p[0],q[1]-p[1])*.4)*(e.bend||1);
-    const path=e.straight?`M${p[0]},${p[1]} L${q[0]},${q[1]}`:`M${p[0]},${p[1]} C${p[0]+p[2]*d},${p[1]+p[3]*d} ${q[0]+q[2]*d},${q[1]+q[3]*d} ${q[0]},${q[1]}`;
-    svg+=`<g${A(e)}><path class="edge ${k} ${e.dash?'dash':''}" d="${path}" marker-end="url(#ar-${k})"/>${e.static?'':`<path class="edge-anim ${k}" d="${path}"/>`}</g>`;
-    if(e.label){const lx=e.lx!=null?e.lx:(p[0]+q[0])/2, ly=e.ly!=null?e.ly:(p[1]+q[1])/2;
-      labels+=`<div class="elabel ${k}" style="left:${lx}px;top:${ly}px"${A(e)}>${e.label}</div>`;}
+    const [sa,sb]=auto(a,b); const p=side(a,e.fs||sa,e.fo||0), q=side(b,e.ts||sb,e.tp||0);
+    const k=e.kind||'flow', hot=!!HOT[k]; const d=Math.max(60,Math.hypot(q[0]-p[0],q[1]-p[1])*.4)*(e.bend||1);
+    const c1=[p[0]+p[2]*d,p[1]+p[3]*d], c2=[q[0]+q[2]*d,q[1]+q[3]*d];
+    const path=e.straight?`M${p[0]},${p[1]} L${q[0]},${q[1]}`:`M${p[0]},${p[1]} C${c1[0]},${c1[1]} ${c2[0]},${c2[1]} ${q[0]},${q[1]}`;
+    // midpoint of the drawn curve (t = .5)
+    const mid=e.straight?[(p[0]+q[0])/2,(p[1]+q[1])/2]:[(p[0]+3*c1[0]+3*c2[0]+q[0])/8,(p[1]+3*c1[1]+3*c2[1]+q[1])/8];
+    const anim=(e.static||hot)?'':`<path class="edge-anim ${k}" d="${path}"${o.calmAt!=null?` data-out="${o.calmAt}"`:''}/>`;
+    svg+=`<g${A(e)}><path class="edge ${k} ${e.dash?'dash':''}" d="${path}" marker-end="url(#ar-${k})"${e.both?` marker-start="url(#ar-${k})"`:''}/>${anim}</g>`;
+    const num=e.n!=null?`<b class="enum ${hot?'hot':''}">${e.n}</b>`:'';
+    const lx=e.lx!=null?e.lx:mid[0], ly=e.ly!=null?e.ly:mid[1];
+    if(e.label) labels+=`<div class="elabel ${k}" style="left:${lx}px;top:${ly}px"${A(e)}>${num}${e.label}</div>`;
+    else if(num) labels+=`<div class="elabel bare" style="left:${lx}px;top:${ly}px"${A(e)}>${num}</div>`;
+    if(hot&&e.in!=null) dots+=`<div class="edot ${k}" style="offset-path:path('${path}')" data-in="${e.in}"${e.dim!=null?` data-dim="${e.dim}"`:''}></div>`;
   });
   svg+='</svg>';
   let html=`<div class="dg" style="left:${o.x||0}px;top:${o.y||0}px;width:${W}px;height:${H}px">`;
@@ -132,7 +146,7 @@ function diagram(o){
     html+=`<div class="node ${n.kind||''} ${n.compact?'compact':''} ${n.big?'big':''}" style="left:${n.x}px;top:${n.y}px;width:${n.w}px;height:${n.h}px"${A(n)}>
       ${n.icon?tile(n.icon,n.iconSize||(n.big?74:52),n.iconColor):''}<div style="min-width:0"><div class="nt">${n.title||''}</div>${n.sub?`<div class="ns">${n.sub}</div>`:''}</div>${n.badge?`<span class="badge">${n.badge}</span>`:''}</div>`;
   });
-  html+=labels;
+  html+=labels+dots;
   (o.steps||[]).forEach(s=>{html+=`<div class="stepno" style="left:${s.x}px;top:${s.y}px"${A(s)}>${s.n}</div>`;});
   (o.pins||[]).forEach(p=>{html+=`<div class="pin ${p.blind?'blind':''}" style="left:${p.x}px;top:${p.y}px"${A(p)}>${p.n}</div>`;});
   html+='</div>';

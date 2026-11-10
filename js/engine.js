@@ -7,7 +7,7 @@
    ========================================================================= */
 (function(){
 // rail pills: [label, phase, fromStep, toStep, attackStyle]
-const PILLS=[['Normal workflow','scenario',0,0],['Compromise','scenario',1,99,1],['Forensic reach','readiness',0,0],['Forensic readiness','readiness',1,99]];
+const PILLS=[['Normal workflow','scenario',0,0],['Attack','scenario',1,1,1],['Before / after','scenario',2,99,1],['Forensic reach','readiness',0,0],['Readiness','readiness',1,99]];
 const PHORDER=['scenario','readiness'];
 const LS_KEY='bsides26-cases';
 const isPresenter=new URLSearchParams(location.search).has('presenter');
@@ -28,6 +28,7 @@ function build(){
   DECK.intro.forEach(s=>add(s));
   if(DECK.agenda) add(DECK.agenda(order));
   order.forEach((id,i)=>{const c=DECK.cases[id]; c.slides.forEach(s=>add(s,{caseId:id,caseNo:i+1,caseMeta:c}));});
+  if(DECK.scorecard&&order.length) add(DECK.scorecard(order));
   DECK.outro.forEach(s=>add(s));
 }
 
@@ -148,7 +149,7 @@ function openSetup(){
   let items=[...order.map(c=>({id:c,on:true})),...rest.map(c=>({id:c,on:false}))];
   const draw=()=>{
     S.innerHTML=`<div class="box"><h2>Deck setup</h2><p>Pick which incident cases to present and their order. Saved in this browser. Press <kbd>S</kbd> again or click Apply.</p>
-    ${items.map((it,k)=>{const c=DECK.cases[it.id];return `<div class="it"><input type="checkbox" data-k="${k}" ${it.on?'checked':''}><span class="nm"><b>${c.code}</b> — ${c.title} <span class="mins">· ${c.date}</span></span><span class="mins">~${c.mins} min</span><button data-up="${k}">▲</button><button data-dn="${k}">▼</button></div>`}).join('')}
+    ${items.map((it,k)=>{const c=DECK.cases[it.id];return `<div class="it"><input type="checkbox" data-k="${k}" ${it.on?'checked':''}><span class="nm"><b>${c.code}</b> — ${c.title} <span class="mins">· ${c.date}${c.backup?" · backup":""}</span></span><span class="mins">~${c.mins} min</span><button data-up="${k}">▲</button><button data-dn="${k}">▼</button></div>`}).join('')}
     <div style="display:flex;gap:10px;margin-top:14px"><button class="pri" id="sapply">Apply</button><button id="sall">All</button><button id="sreset">Reset</button><span style="flex:1"></span><button id="spres">Open presenter view</button></div>
     <div class="keys">Clicker / keys: <kbd>PgDn</kbd> <kbd>→</kbd> <kbd>Space</kbd> next · <kbd>PgUp</kbd> <kbd>←</kbd> back · <kbd>B</kbd>/<kbd>.</kbd> black screen · <kbd>F5</kbd>/<kbd>Esc</kbd>/<kbd>F</kbd> fullscreen · <kbd>Home</kbd>/<kbd>End</kbd> · <kbd>V</kbd> presenter view (notes + timer, synced) · <kbd>S</kbd> this panel</div></div>`;
     S.querySelectorAll('input').forEach(i=>i.onchange=()=>{items[+i.dataset.k].on=i.checked;});
