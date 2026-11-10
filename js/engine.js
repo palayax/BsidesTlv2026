@@ -1,5 +1,5 @@
 /* =========================================================================
-   Presentation engine — clicker-first.
+   Presentation engine - clicker-first.
    Next : PageDown, ArrowRight, ArrowDown, Space, Enter, N, mouse click
    Prev : PageUp, ArrowLeft, ArrowUp, Backspace, P
    B / . / W : blackout      F5 / Esc / F : toggle fullscreen (clicker "start" button)
@@ -130,7 +130,7 @@ function renderPresenter(){
   if(step<m) renderInto(nx,idx,step+1); else renderInto(nx,idx+1,0);
   const s=deck[idx]; let notes=s.notes||'';
   if(Array.isArray(notes)) notes=notes.map((n,k)=>`<div style="opacity:${k===step?1:.4};margin-bottom:12px"><div class="stepnote">click ${k}</div>${n}</div>`).join('');
-  document.getElementById('pnotes').innerHTML=`<div class="stepnote">${s.title||s.id} — step ${step}/${m}</div>`+notes;
+  document.getElementById('pnotes').innerHTML=`<div class="stepnote">${s.title||s.id} - step ${step}/${m}</div>`+notes;
   document.getElementById('ppos').textContent=`slide ${idx+1}/${deck.length}`;
   const L=document.getElementById('plist');
   L.innerHTML=deck.map((d,k)=>`<div data-k="${k}" class="${k===idx?'cur':''}">${String(k+1).padStart(2,'0')} ${d.caseMeta?'['+d.caseMeta.code+'] ':''}${d.title||d.id}</div>`).join('');
@@ -149,7 +149,7 @@ function openSetup(){
   let items=[...order.map(c=>({id:c,on:true})),...rest.map(c=>({id:c,on:false}))];
   const draw=()=>{
     S.innerHTML=`<div class="box"><h2>Deck setup</h2><p>Pick which incident cases to present and their order. Saved in this browser. Press <kbd>S</kbd> again or click Apply.</p>
-    ${items.map((it,k)=>{const c=DECK.cases[it.id];return `<div class="it"><input type="checkbox" data-k="${k}" ${it.on?'checked':''}><span class="nm"><b>${c.code}</b> — ${c.title} <span class="mins">· ${c.date}${c.backup?" · backup":""}</span></span><span class="mins">~${c.mins} min</span><button data-up="${k}">▲</button><button data-dn="${k}">▼</button></div>`}).join('')}
+    ${items.map((it,k)=>{const c=DECK.cases[it.id];return `<div class="it"><input type="checkbox" data-k="${k}" ${it.on?'checked':''}><span class="nm"><b>${c.code}</b> - ${c.title} <span class="mins">· ${c.date}${c.backup?" · backup":""}</span></span><span class="mins">~${c.mins} min</span><button data-up="${k}">▲</button><button data-dn="${k}">▼</button></div>`}).join('')}
     <div style="display:flex;gap:10px;margin-top:14px"><button class="pri" id="sapply">Apply</button><button id="sall">All</button><button id="sreset">Reset</button><span style="flex:1"></span><button id="spres">Open presenter view</button></div>
     <div class="keys">Clicker / keys: <kbd>PgDn</kbd> <kbd>→</kbd> <kbd>Space</kbd> next · <kbd>PgUp</kbd> <kbd>←</kbd> back · <kbd>B</kbd>/<kbd>.</kbd> black screen · <kbd>F5</kbd>/<kbd>Esc</kbd>/<kbd>F</kbd> fullscreen · <kbd>Home</kbd>/<kbd>End</kbd> · <kbd>V</kbd> presenter view (notes + timer, synced) · <kbd>S</kbd> this panel</div></div>`;
     S.querySelectorAll('input').forEach(i=>i.onchange=()=>{items[+i.dataset.k].on=i.checked;});

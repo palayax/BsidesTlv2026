@@ -1,4 +1,4 @@
-/* CASE — postmark-mcp: lookalike MCP server adds a hidden Bcc (Sep 2025)
+/* CASE - postmark-mcp: lookalike MCP server adds a hidden Bcc (Sep 2025)
    Sources: Postmark security alert 25 Sep 2025; Koi Security disclosure; Snyk; The Register 29 Sep 2025.
    Bcc address as published by Koi Security (defanged). */
 (function(){
@@ -12,7 +12,7 @@ KIT.defineCase('postmark',{
   refs:[['Postmark','postmarkapp.com/blog/information-regarding-malicious-postmark-mcp-package']],
 },{
 scenario:{
-  h:['"Send the invoice" — an assistant wired to <em>transactional email</em>','A trusted package gets a <span class="red">one-line update</span>','Every email is <span class="red">silently copied</span> — agent log stays clean'],
+  h:['"Send the invoice": an assistant wired to <em>transactional email</em>','A trusted package gets a <span class="red">one-line update</span>','Every email is <span class="red">silently copied</span>, the agent log stays clean'],
   dg:{path:['npm','mcp','pm','atk'],
     nodes:[
       {id:'u',x:0,y:220,w:170,icon:'users',title:'Ops team',sub:'"email invoice"'},
@@ -35,31 +35,30 @@ scenario:{
   ],
   slotB:'Email provider · message activity',
   cardB:[
-    kvcard({ic:'postmark',title:'Postmark · activity',rows:[['To','billing@acme.example'],['Bcc','—'],['Status','<span class="ok">Delivered</span>']]}),
+    kvcard({ic:'postmark',title:'Postmark · activity',rows:[['To','billing@acme.example'],['Bcc','(none)'],['Status','<span class="ok">Delivered</span>']]}),
   ],
-  input:'Agent log, all three clicks: <span class="mono">send_email → "sent ✓"</span> — no Bcc anywhere',
-  before:kvcard({ic:'postmark',title:'Postmark · activity · v1.0.15',rows:[['To','billing@acme.example'],['Bcc','—'],['Status','<span class="ok">Delivered</span>']]}),
+  input:'Agent log, all three clicks: <span class="mono">send_email → "sent ✓"</span>, no Bcc anywhere',
+  before:kvcard({ic:'postmark',title:'Postmark · activity · v1.0.15',rows:[['To','billing@acme.example'],['Bcc','(none)'],['Status','<span class="ok">Delivered</span>']]}),
   after:kvcard({ic:'postmark',title:'Postmark · activity · v1.0.16',cls:'bad',rows:[['To','billing@acme.example'],['Bcc','<span class="diff type">phan@giftshop[.]club</span>'],['Status','<span class="diff">Delivered × 2</span>'],['Kept','45 days by default']]}),
   bottom:[
     klass([['Normal',['assistant → MCP tool → email API'],'green'],['Data',['invoices','password resets','customer mail'],'cyan']]),
     klass([['Attack',['Lookalike MCP server','Rug-pull after 15 clean versions'],'red'],['ATT&amp;CK',['T1195.002','T1036.005']],['ATLAS',['AML.T0010']],['OWASP',['LLM03']]],true),
-    klass([['Outcome',['Tool-layer exfiltration — request ≠ effect'],'red'],['OWASP',['LLM02']],['Impact',['C:HIGH','password-reset links'],'amber'],['Status',['package removed · official @activecampaign/postmark-mcp'],'green']],true),
+    klass([['Outcome',['Tool-layer exfiltration: request ≠ effect'],'red'],['OWASP',['LLM02']],['Impact',['C:HIGH','password-reset links'],'amber'],['Status',['package removed · official @activecampaign/postmark-mcp'],'green']],true),
   ],
-  notes:['Normal: staff ask the assistant to email an invoice (1, 2). It calls an MCP server from npm that holds the Postmark API token (3), and the customer gets the email (4).','After 15 clean versions, version 1.0.16 adds one line: a hidden Bcc (5). Unpinned installs pick it up automatically.','The agent log is unchanged — the tool call never mentions Bcc. Only the email provider shows the extra recipient (6): BEFORE vs AFTER on the right, and only within its 45-day retention.']
+  notes:['Normal: staff ask the assistant to email an invoice (1, 2). It calls an MCP server from npm that holds the Postmark API token (3), and the customer gets the email (4).','After 15 clean versions, version 1.0.16 adds one line: a hidden Bcc (5). Unpinned installs pick it up automatically.','The agent log is unchanged. The tool call never mentions Bcc. Only the email provider shows the extra recipient (6): BEFORE vs AFTER on the right, and only within its 45-day retention.']
 },
 readiness:{
-  h:['The agent\'s log was <em>truthful</em> — and useless','What to switch on <em>now</em> — at the provider, and on Claude / ChatGPT'],
+  h:['The agent\'s log was <em>truthful</em>, and useless','What to switch on <em>now</em>: enterprise capability or external control'],
   assume:['MCP host logs &amp; transcripts','Lockfiles / package cache','EDR','Postmark activity (45 days)'],
-  plat:'email provider or 3rd-party',
   rows:[
-    {q:'Which hosts ran the malicious version?',now:['y','MCP config, npm cache, lockfiles'],plat:['y','AI-BOM / MCP inventory via EDR or MDM'],ent:['y','OTel + hooks record which MCP servers each session used']},
-    {q:'Which emails were copied?',now:['p','Provider activity — only within 45 days'],plat:['y','<b>Provider logs / webhooks</b> to SIEM, retention extended'],ent:['n','Agent-side records never see the Bcc']},
-    {q:'Which agent session sent each copied email?',now:['n','Tool calls lack the provider Message-ID'],plat:['p','Provider log has the Message-ID, not the session'],ent:['y','<b>Hooks + OTel</b> log each MCP call &amp; result → join on Message-ID']},
-    {q:'Did a human approve each send?',now:['n','Approval state not kept'],plat:['n','Not visible to the provider'],ent:['y','OTel <b>tool_decision</b> events: approved / auto-approved']},
+    {q:'Which hosts ran the malicious version?',now:['y','MCP config, npm cache, lockfiles'],rd:['y',[['ext','<b>AI-BOM / MCP inventory</b> collected by EDR or MDM'],['ent','Claude Code · Codex <b>OTel</b> tool events name the MCP tool']]]},
+    {q:'Which emails were copied?',now:['p','Provider activity, 45 days only'],rd:['y',[['ext','<b>Provider outbound logs / webhooks</b> to SIEM, kept longer']]]},
+    {q:'Which agent session sent each copied email?',now:['n','Tool calls lack the provider Message-ID'],rd:['y',[['ent','Managed <b>PostToolUse hook</b> logs each MCP call + response: join on Message-ID']]]},
+    {q:'Did a human approve each send?',now:['n','Approval state not kept'],rd:['y',[['ent','<b>OTel</b> <span class="mono">tool_decision</span> events: accept / reject and by whom']]]},
   ],
   note0:'The agent recorded the <b>request</b>; only the provider saw the <b>effect</b>. Without a shared ID, the two can\'t be joined.',
   note1:'Readiness = log <b>both</b> sides with a join key: provider logs kept long enough, agent tool calls with their results.',
-  notes:['You can find exposed hosts and — inside 45 days — the copied emails. You cannot tie each copy to a session or an approval.','Readiness: provider logs in the SIEM with extended retention; on the agent side, hooks and OpenTelemetry on every MCP call, with the result, so you can join on the Message-ID. Note the agent side alone would never show the Bcc.']
+  notes:['You can find exposed hosts and, inside 45 days, the copied emails. You cannot tie each copy to a session or an approval.','Readiness, one column. External controls: an AI-BOM of MCP servers from EDR or MDM, and provider logs kept longer. Enterprise: Claude Code or Codex telemetry and managed hooks log every MCP call with its response, so the Message-ID joins the agent session to the provider log; tool_decision events show who approved.']
 },
 score:{who:['p','y'],act:['p','y'],effect:['p','y'],input:['na','na'],why:['n','n']}
 });

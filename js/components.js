@@ -7,7 +7,7 @@
      dim: element dimmed at step >= n
    ========================================================================= */
 (function(){
-const BRAND_COLORS={anthropic:'#d97757',claude:'#d97757',openai:'#ffffff',github:'#ffffff',githubactions:'#2088ff',npm:'#cb3837',nx:'#ffffff',
+const BRAND_COLORS={perplexity:'#20b8cd',reddit:'#ff4500',anthropic:'#d97757',claude:'#d97757',openai:'#ffffff',github:'#ffffff',githubactions:'#2088ff',npm:'#cb3837',nx:'#ffffff',
   googlegemini:'#8e75b2',replit:'#f26207',nodedotjs:'#5fa04e',cursor:'#ffffff',linux:'#fcc624',apple:'#ffffff',gitlab:'#fc6d26',modelcontextprotocol:'#ffffff',
   splunk:'#65a637',datadog:'#a66ee8',opentelemetry:'#f5a800',okta:'#ffffff',postgresql:'#4169e1',git:'#f05032',ubuntu:'#e95420',docker:'#2496ed',
   bitcoin:'#f7931a',ethereum:'#a7b4ff',gmail:'#ea4335',jira:'#0052cc',cline:'#ffffff',githubcopilot:'#ffffff',google:'#4285f4',macos:'#ffffff',neon:'#00e599',
@@ -88,7 +88,7 @@ function icon(name,size=28,color){
     return `<svg class="ico" width="${size}" height="${size}" viewBox="0 0 24 24" fill="${c}"><path d="${ICONS[name]}"/></svg>`;
   }
   if(name==='postmark') return `<svg class="ico" width="${size}" height="${size}" viewBox="0 0 24 24"><rect x="1" y="1" width="22" height="22" rx="5" fill="#ffde00"/><path d="M7 18V6h5.2a3.8 3.8 0 0 1 0 7.6H10V18z" fill="#000"/></svg>`;
-  const LT={drift:['D','#2563eb'],salesloft:['S','#0f766e']};
+  const LT={};
   if(name==='copilot') return `<svg class="ico" width="${size}" height="${size}" viewBox="0 0 24 24"><defs><linearGradient id="cpg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2f80ed"/><stop offset=".5" stop-color="#8b5cf6"/><stop offset="1" stop-color="#f59e0b"/></linearGradient></defs><rect x="1" y="1" width="22" height="22" rx="6" fill="url(#cpg)"/><path d="M12 5l1.6 4.4L18 11l-4.4 1.6L12 17l-1.6-4.4L6 11l4.4-1.6z" fill="#fff"/></svg>`;
   if(name==='agentforce') return `<svg class="ico" width="${size}" height="${size}" viewBox="0 0 24 24"><rect x="1" y="1" width="22" height="22" rx="6" fill="#0b5cab"/><rect x="6" y="9" width="12" height="9" rx="2.5" fill="none" stroke="#fff" stroke-width="1.6"/><path d="M12 5.5V9M9.5 13h.01M14.5 13h.01" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>`;
   if(LT[name]) return `<svg class="ico" width="${size}" height="${size}" viewBox="0 0 24 24"><rect x="1" y="1" width="22" height="22" rx="6" fill="${LT[name][1]}"/><text x="12" y="17" font-family="Inter,Segoe UI,sans-serif" font-weight="800" font-size="14" text-anchor="middle" fill="#fff">${LT[name][0]}</text></svg>`;
@@ -181,7 +181,7 @@ function stats(list){return `<div class="stats">`+list.map(s=>`<div class="stat"
 
 function chip(t,c){return `<span class="chip ${c||''}">${t}</span>`}
 function stamp(t,c){return `<span class="stamp ${c||'red'}">${t}</span>`}
-function src(list){return `<div class="src">${list.map(s=>`<div>↗ <b>${s[0]}</b> — ${s[1]}</div>`).join('')}</div>`}
+function src(list){return `<div class="src">${list.map(s=>`<div>↗ <b>${s[0]}</b> - ${s[1]}</div>`).join('')}</div>`}
 
 /* ---------- case cover ---------- */
 // c: case meta; o: {summary, stats:[], meta:[[k,v]], sources:[[name,desc]]}
@@ -215,7 +215,7 @@ function mitig(cols,o={}){
 /* ---------- visibility matrix ---------- */
 // rows:[{q, cells:['y'|'p'|'n'|'na', ...], notes?}], cols:[label]
 function matrix(cols,rows,o={}){
-  const L={y:'✔ YES',p:'◐ PARTIAL',n:'✖ NO',na:'—'};
+  const L={y:'✔ YES',p:'◐ PARTIAL',n:'✖ NO',na:'N/A'};
   return `<table class="mx" style="${o.style||''}"><tr><th></th>${cols.map(c=>`<th>${c}</th>`).join('')}</tr>`+
    rows.map(r=>`<tr${A(r)}><td class="rh">${r.q}</td>${r.cells.map((c,i)=>{const [v,txt]=Array.isArray(c)?c:[c,null];return `<td class="c ${v}">${txt||L[v]}</td>`}).join('')}</tr>`).join('')+`</table>`;
 }
@@ -229,7 +229,7 @@ function swim(lanes,cols,o={}){
   lanes.forEach((l,li)=>{
     h+=`<div style="display:flex;align-items:center;gap:10px;padding:10px;border-radius:10px;background:#0b1523;border:1px solid var(--line);border-left:4px solid ${l.color||'var(--cyan)'};font-weight:700;color:#fff;font-size:19px;line-height:1.15">${icon(l.ic,30,l.color)}<span>${l.label}${l.sub?`<div class="mono muted" style="font-size:13px;font-weight:400">${l.sub}</div>`:''}</span></div>`;
     cols.forEach((c,i)=>{const v=c.cells[li]; const stin=c.in!=null?c.in:i+1;
-      h+=`<div data-in="${stin}" style="border-radius:10px;padding:8px 10px;font-size:15px;line-height:1.3;${v?`background:${l.bg||'#0e1a2c'};border:1px solid ${l.color||'var(--line2)'};color:var(--text)`:'border:1px dashed var(--line);color:var(--faint);display:flex;align-items:center;justify-content:center'}">${v||'—'}</div>`;});
+      h+=`<div data-in="${stin}" style="border-radius:10px;padding:8px 10px;font-size:15px;line-height:1.3;${v?`background:${l.bg||'#0e1a2c'};border:1px solid ${l.color||'var(--line2)'};color:var(--text)`:'border:1px dashed var(--line);color:var(--faint);display:flex;align-items:center;justify-content:center'}">${v||'-'}</div>`;});
   });
   return h+'</div>';
 }

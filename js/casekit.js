@@ -1,5 +1,5 @@
 /* =========================================================================
-   CASE KIT v4 — every incident is 2 screens:
+   CASE KIT v4 - every incident is 2 screens:
      SCREEN A  scenario  : click 1 = normal business workflow (with a realistic example)
                            click 2 = attacker plants / failure starts
                            click 3 = compromise: BEFORE vs AFTER side by side, off-path elements dimmed
@@ -48,7 +48,7 @@ const LEGEND=`<div class="legend"><span><i class="sw ai"></i>AI agent</span><spa
 const gapTag=C=>`<span class="gaptag">${icon('search',20)}Forensic gap: ${C.gap}</span>`;
 const STATE=['<span class="statebadge n">● NORMAL WORKFLOW</span>','<span class="statebadge x">● ATTACK IN PROGRESS</span>','<span class="statebadge x">● COMPROMISED</span>'];
 
-/* SCREEN A — scenario */
+/* SCREEN A - scenario */
 const LAST=2;
 function scenario(C,o){
   const st=o.states||STATE;
@@ -69,21 +69,24 @@ function scenario(C,o){
   ${stepSwap(o.bottom,'','position:absolute;left:64px;right:64px;top:800px')}`;
 }
 
-/* SCREEN B — forensic reach + readiness (C3: platform / 3rd-party column + Claude · ChatGPT Enterprise column) */
-const V={y:'✔ YES',p:'◐ PARTIAL',n:'✖ NO',na:'— N/A'};
+/* SCREEN B - forensic reach + readiness (C3: platform / 3rd-party column + Claude · ChatGPT Enterprise column) */
+const V={y:'✔ YES',p:'◐ PARTIAL',n:'✖ NO',na:'N/A'};
 const vd=c=>`<span class="vd ${c[0]}">${V[c[0]]}</span>${c[1]}`;
-const ENT_NOTE=`<b>Claude Enterprise</b>: Compliance API activity feed, kept 6 years · covers Claude Code, Cowork, Claude in Chrome · audit log = metadata only · no content under zero data retention. &nbsp; <b>ChatGPT Enterprise</b>: Compliance API <span class="mono">conversation_message</span> / <span class="mono">codex_log</span> · Codex OpenTelemetry, opt-in.`;
+/* readiness cell: verdict + artifacts, each tagged ENTERPRISE (licensed capability) or EXTERNAL (non-generic external control) */
+const TAG={ent:'ENTERPRISE',ext:'EXTERNAL CONTROL'};
+const rdcell=r=>`<div class="rdw"><span class="vd ${r[0]}">${V[r[0]]}</span><div>`+r[1].map(a=>`<div class="art"><span class="atag ${a[0]}">${TAG[a[0]]}</span><span>${a[1]}</span></div>`).join('')+`</div></div>`;
+const ENT_NOTE=`<span class="atag ent">ENTERPRISE</span> a capability of an enterprise licence: <b>Claude Enterprise</b> · <b>ChatGPT Enterprise</b> (Compliance API, OpenTelemetry, managed hooks) or the platform's own enterprise tier. &nbsp; <span class="atag ext">EXTERNAL CONTROL</span> a non-generic control you add: SWG, DSPM, DB proxy, canaries, AI inventory.`;
 function readiness(C,o){
   return `<div class="kicker">Forensic reach → readiness · ${C.code}${gapTag(C)}</div>
   ${stepSwap(o.h.map(h=>`<h1 class="t rdy-h">${h}</h1>`))}
   <div class="abs kit-assume" style="left:64px;right:64px;top:142px">${icon('shield',22,'#34d399')} TODAY, BEST PRACTICE ON: ${o.assume.map(a=>chip(a,'green')).join('')}</div>
   <table class="rt abs" style="left:64px;width:1792px;top:210px">
-    <colgroup><col style="width:56px"><col style="width:330px"><col style="width:400px"><col style="width:490px"><col></colgroup>
-    <tr><th>#</th><th>Investigation question</th><th>${icon('search',20)} Generic forensics today</th><th data-in="1" class="thp">${icon('history',20)} Readiness · ${o.plat}</th><th data-in="1" class="the">${icon('claude',20)}${icon('openai',20)} Same workflow on Claude · ChatGPT Enterprise</th></tr>
-    ${o.rows.map((r,i)=>`<tr><td>Q${i+1}</td><td class="rq">${r.q}</td><td>${vd(r.now)}</td><td class="rd" data-in="1">${vd(r.plat)}</td><td class="re" data-in="1">${vd(r.ent)}</td></tr>`).join('')}
+    <colgroup><col style="width:56px"><col style="width:380px"><col style="width:500px"><col></colgroup>
+    <tr><th>#</th><th>Investigation question</th><th>${icon('search',20)} Generic forensics today</th><th data-in="1" class="thp">${icon('history',20)} Readiness · the artifact that answers it</th></tr>
+    ${o.rows.map((r,i)=>`<tr><td>Q${i+1}</td><td class="rq">${r.q}</td><td>${vd(r.now)}</td><td class="rd" data-in="1">${rdcell(r.rd)}</td></tr>`).join('')}
   </table>
-  ${stepSwap([`<div class="callout amber">${o.note0}</div>`,`<div class="callout cyan">${o.note1}</div>`],'','position:absolute;left:64px;right:64px;top:770px')}
-  <div class="abs entnote" data-in="1" style="left:64px;right:64px;top:872px">${ENT_NOTE}</div>`;
+  ${stepSwap([`<div class="callout amber">${o.note0}</div>`,`<div class="callout cyan">${o.note1}</div>`],'','position:absolute;left:64px;right:64px;top:780px')}
+  <div class="abs entnote" data-in="1" style="left:64px;right:64px;top:882px">${ENT_NOTE}</div>`;
 }
 
 function defineCase(id,C,s){

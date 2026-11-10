@@ -1,9 +1,9 @@
-/* CASE — Replit Agent deletes SaaStr production DB during a code freeze (Jul 2025)
+/* CASE - Replit Agent deletes SaaStr production DB during a code freeze (Jul 2025)
    Sources: The Register 21 & 22 Jul 2025; Replit statements; AI Incident Database #1152. Chat lines paraphrased. */
 (function(){
 const {chat,kvcard,klass}=KIT;
 KIT.defineCase('replit',{
-  code:'REPLIT-SAASTR',title:'The agent that deleted prod — and misreported it',date:'Jul 2025',sev:'high',sevLabel:'high',mins:5,
+  code:'REPLIT-SAASTR',title:'The agent that deleted prod and misreported it',date:'Jul 2025',sev:'high',sevLabel:'high',mins:5,
   org:'Replit Agent × SaaStr',agentType:'Coding / app-building agent',
   gap:'the agent\'s own account is the only record',
   logos:['replit','postgresql'],
@@ -12,7 +12,7 @@ KIT.defineCase('replit',{
 },{
 scenario:{
   states:['<span class="statebadge n">● NORMAL WORKFLOW</span>','<span class="statebadge x">● FAILURE STARTS</span>','<span class="statebadge x">● DATA DESTROYED</span>'],
-  h:['A founder builds an app <em>by chatting with an agent</em>','A "code freeze" — <span class="red">typed in chat, enforced nowhere</span>','The agent wipes prod — <span class="red">then says rollback is impossible</span>'],
+  h:['A founder builds an app <em>by chatting with an agent</em>','A "code freeze": <span class="red">typed in chat, enforced nowhere</span>','The agent wipes prod, <span class="red">then says rollback is impossible</span>'],
   dg:{path:['u','fz','ag','db','rb'],
     nodes:[
       {id:'fz',x:0,y:0,icon:'ban',iconColor:'#ffb020',title:'"CODE FREEZE"',sub:'chat text only',kind:'secret',in:1},
@@ -34,8 +34,8 @@ scenario:{
     ]},
   slotA:'Chat with the agent',
   cardA:[
-    chat({ic:'replit',title:'Replit Agent',msgs:[['u','Founder','Add CSV export for contacts'],['a','Agent','Done — export added. <span class="ok">✔ tests pass</span>']]}),
-    chat({ic:'replit',title:'Replit Agent',cls:'warn',msgs:[['u','Founder','<b>CODE FREEZE.</b> No changes without my permission.'],['a','Agent','Understood — no changes without approval.']]}),
+    chat({ic:'replit',title:'Replit Agent',msgs:[['u','Founder','Add CSV export for contacts'],['a','Agent','Done, export added. <span class="ok">✔ tests pass</span>']]}),
+    chat({ic:'replit',title:'Replit Agent',cls:'warn',msgs:[['u','Founder','<b>CODE FREEZE.</b> No changes without my permission.'],['a','Agent','Understood, no changes without approval.']]}),
   ],
   slotB:'Production database',
   cardB:[
@@ -46,24 +46,23 @@ scenario:{
   after:kvcard({ic:'postgresql',title:'prod DB · after',cls:'bad',rows:[['executives','<span class="diff">1,206 → 0</span>'],['companies','<span class="diff">1,196 → 0</span>'],['record','<span class="diff">only the agent\'s own account</span>']]}),
   bottom:[
     klass([['Normal',['agent writes code, runs shell &amp; SQL, deploys'],'green'],['Access',['write / DDL on production'],'amber']]),
-    klass([['Failure',['Instruction-only control — no enforcement'],'red'],['OWASP',['LLM06 Excessive agency']],['Prior',['fabricated data &amp; test results (per founder)'],'amber']],true),
+    klass([['Failure',['Instruction-only control, no enforcement'],'red'],['OWASP',['LLM06 Excessive agency']],['Prior',['fabricated data &amp; test results (per founder)'],'amber']],true),
     klass([['Outcome',['Data destruction','False recovery claim'],'red'],['ATT&amp;CK (effect)',['T1485','T1490']],['OWASP',['LLM06','LLM09']],['Adversary',['none'],'cyan'],['Impact',['I:HIGH A:HIGH'],'amber'],['Status',['restored · dev/prod split shipped'],'green']],true),
   ],
-  notes:['Normal: the founder prompts the agent (1); it writes code (2), runs SQL (3) on a database that is both dev and prod and serves the live app (4).','He declares a code freeze — in chat (5). Nothing enforces it.','The agent runs destructive commands on production (6). Right side: BEFORE and AFTER — 1,206 executives and 1,196 companies down to zero, and the only record is the agent\'s own account, which said rollback was impossible. Restore worked the next day (7). No adversary — the same forensic problem. T1485 data destruction, T1490 inhibit recovery, LLM09 misinformation.']
+  notes:['Normal: the founder prompts the agent (1); it writes code (2), runs SQL (3) on a database that is both dev and prod and serves the live app (4).','He declares a code freeze in chat (5). Nothing enforces it.','The agent runs destructive commands on production (6). Right side: BEFORE and AFTER: 1,206 executives and 1,196 companies down to zero, and the only record is the agent\'s own account, which said rollback was impossible. Restore worked the next day (7). No adversary, same forensic problem. T1485 data destruction, T1490 inhibit recovery, LLM09 misinformation.']
 },
 readiness:{
-  h:['The chat is the log — <span class="red">written by the suspect</span>','What to switch on <em>now</em> — on the platform, and on Claude / ChatGPT'],
+  h:['The chat is the log, <span class="red">written by the suspect</span>','What to switch on <em>now</em>: enterprise capability or external control'],
   assume:['Platform checkpoints &amp; rollback','Full chat history','DB backups / point-in-time restore'],
-  plat:'DB or 3rd-party control',
   rows:[
-    {q:'Exactly which commands ran, in what order?',now:['n','Vendor-held execution traces'],plat:['y','<b>DB audit log / DB proxy</b> records every statement'],ent:['y','Claude Code / Codex: <b>OpenTelemetry</b> tool events + <b>hooks</b> → SIEM']},
-    {q:'Did a human approve the destructive step?',now:['n','Approval state not recorded'],plat:['n','No outside view of in-agent approvals'],ent:['y','OTel <b>tool_decision</b> events: accepted / rejected, by config or by user']},
-    {q:'Was the freeze still in the agent\'s context?',now:['n','Context at decision time not kept'],plat:['n','No outside view of the agent\'s context'],ent:['p','<b>Compliance API</b> session transcripts — compaction can still drop it']},
-    {q:'How much data was lost — really?',now:['p','The agent\'s own count'],plat:['y','Verified backups / PITR + DB audit log as ground truth'],ent:['p','Transcript is still the agent\'s testimony — verify in the DB']},
+    {q:'Exactly which commands ran, in what order?',now:['n','Vendor-held execution traces'],rd:['y',[['ext','<b>DB audit log / DB proxy</b> records every statement'],['ent','Claude Code · Codex <b>OTel</b> tool events + hooks to SIEM']]]},
+    {q:'Did a human approve the destructive step?',now:['n','Approval state not recorded'],rd:['y',[['ent','<b>OTel</b> <span class="mono">tool_decision</span>: accepted / rejected, by config or by user']]]},
+    {q:'Was the freeze still in the agent\'s context?',now:['n','Context at decision time not kept'],rd:['p',[['ent','<b>PreCompact hook</b> archives the transcript before it is summarised']]]},
+    {q:'How much data was really lost?',now:['p','The agent\'s own count'],rd:['y',[['ext','<b>PITR backups + DB audit log</b> as ground truth']]]},
   ],
   note0:'Best case: you can prove <b>recovery</b> and the <b>instructions</b>. Not the command sequence, the approval, or the agent\'s context.',
   note1:'Readiness = DB-side ground truth (audit log, proxy with a separate agent identity) + agent telemetry from an enterprise-managed coding agent.',
-  notes:['With checkpoints and chat history you can prove what was asked and that restore worked. Not the commands, the approvals, or what the agent had in context.','Readiness: the DB audit log or a DB proxy gives the statements, ideally under a separate identity for the agent. If the same workflow used Claude Code or Codex under an enterprise account: OpenTelemetry tool and tool_decision events, hooks, and Compliance API transcripts. The agent\'s own words remain testimony.']
+  notes:['With checkpoints and chat history you can prove what was asked and that restore worked. Not the commands, the approvals, or what the agent had in context.','Readiness, one column. External controls on the database: an audit log or proxy with a separate agent identity, and point-in-time backups as ground truth. Enterprise coding agents: OpenTelemetry tool and decision events, and a PreCompact hook that archives the transcript before context is summarised.']
 },
 score:{who:['n','y'],act:['n','y'],effect:['p','y'],input:['n','p'],why:['n','n']}
 });
