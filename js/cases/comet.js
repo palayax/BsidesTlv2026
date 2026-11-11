@@ -55,18 +55,17 @@ scenario:{
   notes:['Normal: an employee reading a Reddit thread asks the Comet assistant to summarize it (1). The agent reads the page (2). It runs inside the browser, so it can use every site the employee is signed in to.','Arrow 3: anyone can post a comment. The instructions sit behind a spoiler tag, so a human reader sees nothing. Nobody has asked the agent yet.','When the employee asks for the summary, the agent follows the comment: it reads the account email (4), starts a login on perplexity.ai with a trailing dot so it counts as a different domain, reads the code in Gmail (5), and posts both as a public reply (6). Account takeover. Brave reported it on 25 July 2025; the first fix was incomplete and it was re-reported after disclosure.']
 },
 readiness:{
-  h:['Every log shows <em>the employee</em>. <span class="red">None shows the agent.</span>','What to switch on <em>now</em>: enterprise capability or external control'],
+  h:'Every log shows <em>the employee</em>. <span class="red">None shows the agent.</span>',
   assume:['Browser history','Google Workspace audit','IdP sign-in logs','EDR on the laptop'],
   rows:[
-    {q:'Who read the login code in Gmail?',now:['p','Workspace logs show the user\'s own session, IP and device'],rd:['y',[['ext','<b>Enterprise browser</b> telemetry marks agent-driven tabs'],['ent','Claude in Chrome: session transcripts in the <b>Compliance API</b>']]]},
-    {q:'Which pages did the agent open, in what order?',now:['p','Browser history; visits look like the user\'s'],rd:['y',[['ext','<b>SWG / enterprise browser</b> logs with full URLs'],['ent','<b>Compliance API</b> activity feed, kept 6 years']]]},
-    {q:'Which page steered it?',now:['n','Page content not kept; the comment can be deleted'],rd:['p',[['ext','<b>Browser isolation / SWG</b> page capture'],['ent','Agent transcript holds the page text it read']]]},
-    {q:'What left, and to whom?',now:['n','A public reply from the user\'s own account'],rd:['p',[['ext','<b>SWG</b> logging form posts and full URLs'],['ent','Agent transcript shows the text it posted']]]},
+    {k:'who',now:['p','Every log shows the employee: same session, IP and device'],rd:['y',[['ext','<b>Enterprise browser</b> telemetry marks agent-driven tabs'],['ent','Claude in Chrome: session transcripts in the <b>Compliance API</b>']]]},
+    {k:'how',now:['n','Page content is not kept, and the comment can be deleted'],rd:['p',[['ext','<b>Browser isolation / SWG</b> page capture'],['ent','Agent transcript holds the page text it read']]]},
+    {k:'what',now:['p','Browser history; the visits look like the user\'s own'],rd:['y',[['ext','<b>SWG / enterprise browser</b> logs with full URLs'],['ent','<b>Compliance API</b> activity feed, kept 6 years']]]},
+    {k:'impact',now:['n','A public reply posted from the user\'s own account'],rd:['p',[['ext','<b>SWG</b> logging form posts and full URLs'],['ent','Agent transcript shows the text it posted']]]},
   ],
-  note0:'Gmail, the IdP and browser history all show <b>the employee</b>. Nothing records that <b>an agent</b> drove the session, or which page told it to.',
-  note1:'Readiness = agent sessions held by the AI vendor under an enterprise account, plus browser or SWG logs. A consumer agentic browser gives you neither.',
-  notes:['Assume browser history, Workspace audit, IdP and EDR. Every record points at the employee: same session, same IP, same device. You can see the login and the Reddit reply, not that an agent made them or which comment told it to.','Readiness, one column. External controls: an enterprise browser or SWG that logs full URLs and marks agent-driven tabs, and page capture. Enterprise: if the browser agent is Claude in Chrome under an Enterprise account, its session transcripts and the activity feed are in the Compliance API.']
+  note:'Readiness = agent sessions held by the AI vendor under an enterprise account, plus browser or SWG logs. A consumer agentic browser gives you neither.',
+  notes:'Assume browser history, Workspace audit, IdP and EDR. Every record points at the employee: same session, same IP, same device. Who did it, how it got in, what it did and what left all stay partly or fully open. Readiness: an enterprise browser or SWG that logs full URLs and marks agent-driven tabs, page capture, and, for Claude in Chrome under an Enterprise account, session transcripts and the activity feed in the Compliance API.'
 },
-score:{who:['n','y'],act:['p','y'],effect:['p','p'],input:['n','p'],why:['n','n']}
+score:{who:['p','y'],act:['p','y'],effect:['n','p'],input:['n','p'],why:['n','n']}
 });
 })();

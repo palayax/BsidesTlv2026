@@ -7,7 +7,7 @@
    ========================================================================= */
 (function(){
 // rail pills: [label, phase, fromStep, toStep, attackStyle]
-const PILLS=[['Normal workflow','scenario',0,0],['Attack','scenario',1,1,1],['Before / after','scenario',2,99,1],['Forensic reach','readiness',0,0],['Readiness','readiness',1,99]];
+const PILLS=[['Normal workflow','scenario',0,0],['Attack','scenario',1,1,1],['Before / after','scenario',2,99,1],['Forensic gaps → readiness','readiness',0,99]];
 const PHORDER=['scenario','readiness'];
 const LS_KEY='bsides26-cases';
 const isPresenter=new URLSearchParams(location.search).has('presenter');

@@ -48,18 +48,17 @@ scenario:{
   notes:['Normal: staff ask the assistant to email an invoice (1, 2). It calls an MCP server from npm that holds the Postmark API token (3), and the customer gets the email (4).','After 15 clean versions, version 1.0.16 adds one line: a hidden Bcc (5). Unpinned installs pick it up automatically.','The agent log is unchanged. The tool call never mentions Bcc. Only the email provider shows the extra recipient (6): BEFORE vs AFTER on the right, and only within its 45-day retention.']
 },
 readiness:{
-  h:['The agent\'s log was <em>truthful</em>, and useless','What to switch on <em>now</em>: enterprise capability or external control'],
+  h:'The agent\'s log was <em>truthful</em>, and useless',
   assume:['MCP host logs &amp; transcripts','Lockfiles / package cache','EDR','Postmark activity (45 days)'],
   rows:[
-    {q:'Which hosts ran the malicious version?',now:['y','MCP config, npm cache, lockfiles'],rd:['y',[['ext','<b>AI-BOM / MCP inventory</b> collected by EDR or MDM'],['ent','Claude Code · Codex <b>OTel</b> tool events name the MCP tool']]]},
-    {q:'Which emails were copied?',now:['p','Provider activity, 45 days only'],rd:['y',[['ext','<b>Provider outbound logs / webhooks</b> to SIEM, kept longer']]]},
-    {q:'Which agent session sent each copied email?',now:['n','Tool calls lack the provider Message-ID'],rd:['y',[['ent','Managed <b>PostToolUse hook</b> logs each MCP call + response: join on Message-ID']]]},
-    {q:'Did a human approve each send?',now:['n','Approval state not kept'],rd:['y',[['ent','<b>OTel</b> <span class="mono">tool_decision</span> events: accept / reject and by whom']]]},
+    {k:'how',now:['p','Lockfile shows v1.0.16; nothing flags the one-line Bcc'],rd:['y',[['ext','<b>AI-BOM / MCP inventory</b> collected by EDR or MDM']]]},
+    {k:'who',now:['n','No ID links each copied email to an agent session'],rd:['y',[['ent','Managed <b>PostToolUse hook</b> logs each MCP call + response: join on Message-ID']]]},
+    {k:'what',now:['p','Agent log shows "send_email → sent": the request, not the Bcc'],rd:['y',[['ent','<b>OTel</b> <span class="mono">tool_decision</span> + <span class="mono">tool_result</span>: what ran, who approved']]]},
+    {k:'impact',now:['p','Provider activity shows the Bcc, for 45 days only'],rd:['y',[['ext','<b>Provider outbound logs / webhooks</b> to SIEM, kept longer']]]},
   ],
-  note0:'The agent recorded the <b>request</b>; only the provider saw the <b>effect</b>. Without a shared ID, the two can\'t be joined.',
-  note1:'Readiness = log <b>both</b> sides with a join key: provider logs kept long enough, agent tool calls with their results.',
-  notes:['You can find exposed hosts and, inside 45 days, the copied emails. You cannot tie each copy to a session or an approval.','Readiness, one column. External controls: an AI-BOM of MCP servers from EDR or MDM, and provider logs kept longer. Enterprise: Claude Code or Codex telemetry and managed hooks log every MCP call with its response, so the Message-ID joins the agent session to the provider log; tool_decision events show who approved.']
+  note:'Readiness = log <b>both</b> sides with a join key: provider logs kept long enough, agent tool calls with their results.',
+  notes:'The agent recorded the request; only the email provider saw the effect, and only for 45 days. How it got in, which session sent each email, what really ran and what left are all partial or open. Readiness: an AI-BOM of MCP servers from EDR or MDM, provider logs kept longer, and Claude Code or Codex telemetry plus a managed hook that logs every MCP call with its response, so the Message-ID joins the two sides.'
 },
-score:{who:['p','y'],act:['p','y'],effect:['p','y'],input:['na','na'],why:['n','n']}
+score:{who:['n','y'],act:['p','y'],effect:['p','y'],input:['p','y'],why:['n','n']}
 });
 })();

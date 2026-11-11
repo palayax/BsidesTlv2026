@@ -55,17 +55,15 @@ scenario:{
   notes:['Normal: a prospect submits the public form (1), a lead is created (2), a rep asks Agentforce to qualify it (3), and the agent reads the lead and related CRM data (4).','Arrow 5: the attacker uses the same public form. The description carries instructions written like ordinary text. Nobody has asked the agent yet; the trigger is delayed. Beforehand the attacker bought an expired domain still on the trusted list, about five dollars.','When a rep asks about that lead, the agent answers and adds an image link carrying other leads\' email addresses. BEFORE vs AFTER on the right. The rep\'s browser fetches the image (6), so the leak happens in the browser, not in Salesforce. CVSS 9.4, fixed by Trusted URLs enforcement.']
 },
 readiness:{
-  h:['The lead record is evidence. <span class="red">The leak is not.</span>','What to switch on <em>now</em>: enterprise capability or external control'],
+  h:'The lead record is evidence. <span class="red">The leak is not.</span>',
   assume:['Shield Event Monitoring','Field Audit Trail','Einstein Trust Layer audit data','Setup Audit Trail'],
   rows:[
-    {q:'Which lead carried the payload, and when?',now:['y','Lead record + field history'],rd:['y',[['ent','<b>Shield Field Audit Trail</b>: field history, long retention']]]},
-    {q:'Which reps\' agent sessions read that lead?',now:['p','Trust Layer / agent audit data'],rd:['y',[['ent','<b>Einstein Trust Layer</b> audit data, retained and exported'],['ent','Same workflow on Claude · ChatGPT: <b>Compliance API</b> joined on record ID']]]},
-    {q:'Which CRM data left, and to where?',now:['n','Image fetched by the rep\'s browser, outside CRM logs'],rd:['p',[['ext','<b>SWG / browser telemetry</b> logging full image URLs']]]},
-    {q:'How many other records hold dormant instructions?',now:['n','Natural language, no signature'],rd:['y',[['ext','<b>DSPM</b> semantic scan of free-text fields, results kept']]]},
+    {k:'how',now:['p','The lead text is stored, but nothing marks it as an instruction'],rd:['y',[['ext','<b>DSPM</b> semantic scan of free-text fields, results kept'],['ent','<b>Shield Field Audit Trail</b>: field history, long retention']]]},
+    {k:'what',now:['p','Agent audit data shows a session read the lead'],rd:['y',[['ent','<b>Einstein Trust Layer</b> audit data, retained and exported'],['ent','Same workflow on Claude · ChatGPT: <b>Compliance API</b> joined on record ID']]]},
+    {k:'impact',now:['n','The image was fetched by the rep\'s browser, outside CRM logs'],rd:['p',[['ext','<b>SWG / browser telemetry</b> logging full image URLs']]]},
   ],
-  note0:'Best practice finds the <b>poisoned lead</b> and the <b>session</b>. The exfiltration happened in the <b>browser</b>, outside every Salesforce log.',
-  note1:'Readiness = Trust Layer audit data or conversation archive + full-URL browser / proxy logs + a semantic scan of what agents read.',
-  notes:['With Shield, Field Audit Trail and Trust Layer data you can find the poisoned lead and the session that read it, but not what left, because the leak was a browser image request.','Readiness, one column. Enterprise: Field Audit Trail and Trust Layer audit data on Salesforce, or Compliance API records joined on the CRM record ID if the same workflow ran on Claude or ChatGPT Enterprise. External controls: full-URL browser or proxy logs and a semantic scan of the free text agents read.']
+  note:'Readiness = Trust Layer audit data or conversation archive + full-URL browser / proxy logs + a semantic scan of what agents read.',
+  notes:'With Shield, Field Audit Trail and Trust Layer data you can find the poisoned lead and the session that read it, but not what left, because the leak was a browser image request. Readiness: Trust Layer audit data retained, or Compliance API records joined on the CRM record ID on Claude or ChatGPT Enterprise, full-URL web logs, and a semantic scan of the free text agents read.'
 },
 score:{who:['p','y'],act:['p','y'],effect:['n','p'],input:['p','y'],why:['n','n']}
 });

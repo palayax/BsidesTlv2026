@@ -52,17 +52,16 @@ scenario:{
   notes:['Normal: the founder prompts the agent (1); it writes code (2), runs SQL (3) on a database that is both dev and prod and serves the live app (4).','He declares a code freeze in chat (5). Nothing enforces it.','The agent runs destructive commands on production (6). Right side: BEFORE and AFTER: 1,206 executives and 1,196 companies down to zero, and the only record is the agent\'s own account, which said rollback was impossible. Restore worked the next day (7). No adversary, same forensic problem. T1485 data destruction, T1490 inhibit recovery, LLM09 misinformation.']
 },
 readiness:{
-  h:['The chat is the log, <span class="red">written by the suspect</span>','What to switch on <em>now</em>: enterprise capability or external control'],
+  h:'The chat is the log, <span class="red">written by the suspect</span>',
   assume:['Platform checkpoints &amp; rollback','Full chat history','DB backups / point-in-time restore'],
   rows:[
-    {q:'Exactly which commands ran, in what order?',now:['n','Vendor-held execution traces'],rd:['y',[['ext','<b>DB audit log / DB proxy</b> records every statement'],['ent','Claude Code · Codex <b>OTel</b> tool events + hooks to SIEM']]]},
-    {q:'Did a human approve the destructive step?',now:['n','Approval state not recorded'],rd:['y',[['ent','<b>OTel</b> <span class="mono">tool_decision</span>: accepted / rejected, by config or by user']]]},
-    {q:'Was the freeze still in the agent\'s context?',now:['n','Context at decision time not kept'],rd:['p',[['ent','<b>PreCompact hook</b> archives the transcript before it is summarised']]]},
-    {q:'How much data was really lost?',now:['p','The agent\'s own count'],rd:['y',[['ext','<b>PITR backups + DB audit log</b> as ground truth']]]},
+    {k:'who',now:['n','Approval not recorded: the agent\'s decision or the user\'s?'],rd:['y',[['ent','<b>OTel</b> <span class="mono">tool_decision</span>: accepted / rejected, by config or by user']]]},
+    {k:'what',now:['n','Only the agent\'s own chat account; execution traces stay with the vendor'],rd:['y',[['ext','<b>DB audit log / DB proxy</b> records every statement'],['ent','Claude Code · Codex <b>OTel</b> tool events + hooks to SIEM']]]},
+    {k:'impact',now:['p','The agent\'s own count of what was lost'],rd:['y',[['ext','<b>PITR backups + DB audit log</b> as ground truth']]]},
+    {k:'why',now:['n','The context at decision time is not kept; was the freeze still in it?'],rd:['n',[['ent','<b>PreCompact hook</b> keeps the context it saw: the input, never the reason']]]},
   ],
-  note0:'Best case: you can prove <b>recovery</b> and the <b>instructions</b>. Not the command sequence, the approval, or the agent\'s context.',
-  note1:'Readiness = DB-side ground truth (audit log, proxy with a separate agent identity) + agent telemetry from an enterprise-managed coding agent.',
-  notes:['With checkpoints and chat history you can prove what was asked and that restore worked. Not the commands, the approvals, or what the agent had in context.','Readiness, one column. External controls on the database: an audit log or proxy with a separate agent identity, and point-in-time backups as ground truth. Enterprise coding agents: OpenTelemetry tool and decision events, and a PreCompact hook that archives the transcript before context is summarised.']
+  note:'Readiness = DB-side ground truth (audit log, proxy with a separate agent identity) + agent telemetry from an enterprise-managed coding agent.',
+  notes:'The only record is the agent\'s own chat. Who decided, what ran, how much was lost and why it ignored the freeze are all open or rest on the agent\'s word. Readiness: a database audit log or proxy with a separate agent identity, point-in-time backups as ground truth, OpenTelemetry tool and decision events, and a PreCompact hook that archives the transcript before context is summarised.'
 },
 score:{who:['n','y'],act:['n','y'],effect:['p','y'],input:['n','p'],why:['n','n']}
 });

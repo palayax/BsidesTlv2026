@@ -51,18 +51,16 @@ scenario:{
   notes:['Normal: an authorized security engineer tasks an AI agent (1), which uses MCP tools (2) against in-scope apps and data (3, 4) inside a signed scope.','The operator uses the same tooling (5) with a fake persona (a security firm doing defensive testing) and splits the work into innocent-looking tasks.','Claude Code runs most of the intrusion at machine speed; a callback server confirms exploits (6). BEFORE vs AFTER: the victim SOC sees scans, logins and a new DB user. Nothing says AI. Accounts banned, victims notified, report 13 November 2025.']
 },
 readiness:{
-  h:['The richest evidence sits <em>with the AI vendor</em>','What to switch on <em>now</em>: as a victim, and for your own AI use'],
+  h:'The richest evidence sits <em>with the AI vendor</em>',
   assume:['EDR / NDR / WAF everywhere','Auth logs on APIs, DBs, registries','Database audit','Long SIEM retention'],
   rows:[
-    {q:'Which hosts were probed or exploited?',now:['y','WAF / firewall / web logs'],rd:['y',[['ext','<b>WAF / NDR</b> logs kept ≥ 1 year for late notification']]]},
-    {q:'Which credentials were used, and which were real?',now:['p','Auth logs show attempts'],rd:['y',[['ext','<b>Canary credentials</b> in configs &amp; registries: exact times']]]},
-    {q:'Was it AI-driven? What was the target list?',now:['n','Only tempo hints at it; prompts are vendor-held'],rd:['p',[['ext','<b>Vendor threat-intel</b> notification, agreed in contract']]]},
-    {q:'Could we prove misuse by our own staff?',now:['n','Local sessions, personal accounts'],rd:['y',[['ent','SSO-bound Claude · ChatGPT accounts: <b>Compliance API</b> + <b>OTel</b>']]]},
+    {k:'who',now:['n','Looks like a human pentester; the operator\'s account sits at the AI vendor'],rd:['p',[['ext','<b>Vendor threat-intel</b> notification, agreed in contract'],['ent','Own staff: SSO-bound Claude · ChatGPT accounts + <b>Compliance API</b>']]]},
+    {k:'what',now:['p','Scans, logins and a new DB user; not the full target list'],rd:['p',[['ext','<b>WAF / NDR</b> logs kept ≥ 1 year for late notification']]]},
+    {k:'impact',now:['p','Auth logs show attempts, not which credentials were real'],rd:['y',[['ext','<b>Canary credentials</b> in configs &amp; registries: exact times']]]},
   ],
-  note0:'Victims can rebuild the <b>effects</b>. Intent, the target list, even the fact that it was AI: these live only with the <b>vendor</b> and the <b>operator</b>.',
-  note1:'For the attacker\'s agent: canaries and vendor notification. For your own tenant, enterprise accounts make agent use investigable.',
-  notes:['Victims can reconstruct scans, logins, new accounts, queries. Not intent, not the target list, not that it was AI.','Readiness on the victim side is external: long-retention WAF and NDR logs, canary credentials, vendor notification terms. For your own staff, enterprise accounts bound to SSO with Compliance API records and OpenTelemetry give the full chain.']
+  note:'For the attacker\'s agent: canaries and vendor notification. For your own tenant, enterprise accounts make agent use investigable.',
+  notes:'Victims can reconstruct scans, logins, new accounts and queries, but not who was behind them, the target list, or that it was AI. Readiness on the victim side is external: long-retention WAF and NDR logs, canary credentials, vendor notification terms. For your own staff, SSO-bound enterprise accounts with Compliance API records and OpenTelemetry give the full chain.'
 },
-score:{who:['p','p'],act:['y','y'],effect:['p','p'],input:['n','n'],why:['n','n']}
+score:{who:['n','p'],act:['p','p'],effect:['p','y'],input:['n','n'],why:['n','n']}
 });
 })();

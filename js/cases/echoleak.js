@@ -55,17 +55,15 @@ scenario:{
   notes:['Normal: an employee asks Copilot to summarize the Q3 plan (arrow 1). Copilot retrieves the mail and files the user can access (arrow 2) and answers with sources.','The attacker sets up a web server that logs every request, then sends one ordinary email (arrow 3). The hidden instructions are written as if addressed to a human reader, so the injection classifier lets it through. No link, no attachment, no click.','Days later the same question also retrieves the attacker email, which tells Copilot to add an image whose address contains the figures. Nobody replies to anyone. The browser of the employee renders the answer and loads the image by itself (arrow 4). The image address is a Teams preview service, allowed by the Copilot content security policy, which fetches whatever URL it is given: the attacker server (arrow 5). The figures arrive in the access log of the attacker. Indirect prompt injection, CVE-2025-32711, CVSS 9.3, patched server-side, not exploited in the wild.']
 },
 readiness:{
-  h:['Mail logs show an email. <span class="red">nothing shows it was a weapon</span>','What to switch on <em>now</em>: enterprise capability or external control'],
+  h:'Mail logs show an email. <span class="red">Nothing shows it was a weapon.</span>',
   assume:['Purview audit incl. Copilot interactions','Message trace','Defender for Office 365','Proxy / DNS logs'],
   rows:[
-    {q:'Did the email reach us? Who else got it?',now:['y','Message trace, mailbox audit'],rd:['y',[['ent','<b>Purview Audit (Premium)</b>: mail events kept 1 year']]]},
-    {q:'Which users\' AI sessions pulled the email in?',now:['p','<span class="mono">CopilotInteraction</span> audit lists accessed resources'],rd:['y',[['ent','<b>Purview</b> retention + eDiscovery of Copilot prompts &amp; responses'],['ent','Same workflow on Claude · ChatGPT: <b>Compliance API</b> conversations']]]},
-    {q:'What left the tenant, and to where?',now:['n','Data hidden in the URL of an allowed domain'],rd:['p',[['ext','<b>SWG / proxy</b> logging full URLs incl. query string']]]},
-    {q:'Which instruction steered the answer?',now:['n','Retrieved passages are not logged'],rd:['p',[['ent','Audit record names the email; <b>Purview</b> retention keeps its text'],['ext','<b>AI gateway</b> log of retrieved context, per request']]]},
+    {k:'how',now:['n','An ordinary email in the mail log; nothing marks it as the attack'],rd:['p',[['ent','Copilot audit record names the email; <b>Purview</b> retention keeps its text'],['ext','<b>AI gateway</b> log of the context read for each answer']]]},
+    {k:'what',now:['p','Audit shows Copilot answered and what it accessed, not the answer'],rd:['y',[['ent','<b>Purview</b> retention + eDiscovery of prompts &amp; responses'],['ent','Same workflow on Claude · ChatGPT: <b>Compliance API</b> conversations']]]},
+    {k:'impact',now:['n','The data left inside an image address on an allowed Microsoft domain'],rd:['p',[['ext','<b>SWG / proxy</b> logging full URLs incl. query string']]]},
   ],
-  note0:'Best practice gives you <b>delivery</b> and <b>access</b>. Nothing records the causal link: <b>email → context → leaked URL</b>.',
-  note1:'Readiness = conversation archive + full-URL proxy logs, enabled <b>before</b> the incident. None of it is retroactive.',
-  notes:['Assume Purview audit with Copilot interaction records, message trace, Defender and proxy logs. You can prove delivery and that Copilot referenced the email. You cannot prove what left or which instruction drove it.','Readiness, one column, each artifact tagged. Enterprise: Purview Audit Premium, Purview retention and eDiscovery of Copilot prompts and responses, or Compliance API conversations if the same workflow ran on Claude or ChatGPT Enterprise. External control: full-URL proxy logs and an AI gateway that logs retrieved context. The steering instruction stays only partly answerable.']
+  note:'Readiness = conversation archive + full-URL proxy logs, switched on <b>before</b> the incident. None of it is retroactive.',
+  notes:'Assume Purview audit with Copilot interaction records, message trace, Defender and proxy logs. Three AI questions stay open. How it got in: the mail log shows an ordinary email. What Copilot did: you see that it answered, not the answer. What left: the data hid in an image address on a Microsoft domain. Readiness: Purview retention and eDiscovery of Copilot prompts and responses, or Compliance API conversations on Claude or ChatGPT Enterprise, plus full-URL proxy logs and an AI gateway that logs retrieved context.'
 },
 score:{who:['y','y'],act:['p','y'],effect:['n','p'],input:['n','p'],why:['n','n']}
 });

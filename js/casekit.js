@@ -3,9 +3,8 @@
      SCREEN A  scenario  : click 1 = normal business workflow (with a realistic example)
                            click 2 = attacker plants / failure starts
                            click 3 = compromise: BEFORE vs AFTER side by side, off-path elements dimmed
-     SCREEN B  readiness : click 1 = what generic forensics answers today (best practice assumed)
-                           click 2 = readiness: (a) on the incident's own platform or a 3rd-party control,
-                                     (b) the equivalent on Claude Enterprise / ChatGPT Enterprise
+     SCREEN B  readiness : one view - the AI questions generic forensics cannot (fully) answer,
+                           today's verdict and the readiness artifact (ENTERPRISE / EXTERNAL CONTROL)
    Each case also carries:
      gap   : the forensic gap it proves (agenda card, both screens)
      score : verdicts for the scorecard screen, {who,act,effect,input,why}: [today, ready] with y|p|n|na
@@ -69,33 +68,36 @@ function scenario(C,o){
   ${stepSwap(o.bottom,'','position:absolute;left:64px;right:64px;top:800px')}`;
 }
 
-/* SCREEN B - forensic reach + readiness (C3: platform / 3rd-party column + Claude · ChatGPT Enterprise column) */
+/* SCREEN B - forensic gaps + readiness, one view.
+   Only the AI-related investigation questions that generic forensics answers partly or not at all,
+   phrased like the generic questions on the intro screens (WHO / HOW / WHAT / IMPACT / WHY).
+   Each row: today's verdict + why, and the readiness artifact (tagged ENTERPRISE or EXTERNAL CONTROL). */
+const GQ={when:['WHEN','When did it happen?'],who:['WHO','Who did it?'],how:['HOW','How did it get in?'],what:['WHAT','What did it do?'],impact:['IMPACT','What was touched, what left?'],why:['WHY','Why did it act?'],replay:['REPLAY','Can we reproduce it?']};
 const V={y:'✔ YES',p:'◐ PARTIAL',n:'✖ NO',na:'N/A'};
-const vd=c=>`<span class="vd ${c[0]}">${V[c[0]]}</span>${c[1]}`;
-/* readiness cell: verdict + artifacts, each tagged ENTERPRISE (licensed capability) or EXTERNAL (non-generic external control) */
+const vd=c=>`<div class="rdw"><span class="vd ${c[0]}">${V[c[0]]}</span><div>${c[1]}</div></div>`;
 const TAG={ent:'ENTERPRISE',ext:'EXTERNAL CONTROL'};
 const rdcell=r=>`<div class="rdw"><span class="vd ${r[0]}">${V[r[0]]}</span><div>`+r[1].map(a=>`<div class="art"><span class="atag ${a[0]}">${TAG[a[0]]}</span><span>${a[1]}</span></div>`).join('')+`</div></div>`;
 const ENT_NOTE=`<span class="atag ent">ENTERPRISE</span> a capability of an enterprise licence: <b>Claude Enterprise</b> · <b>ChatGPT Enterprise</b> (Compliance API, OpenTelemetry, managed hooks) or the platform's own enterprise tier. &nbsp; <span class="atag ext">EXTERNAL CONTROL</span> a non-generic control you add: SWG, DSPM, DB proxy, canaries, AI inventory.`;
 function readiness(C,o){
-  return `<div class="kicker">Forensic reach → readiness · ${C.code}${gapTag(C)}</div>
-  ${stepSwap(o.h.map(h=>`<h1 class="t rdy-h">${h}</h1>`))}
+  return `<div class="kicker">Forensic gaps → readiness · ${C.code}${gapTag(C)}</div>
+  <h1 class="t rdy-h">${o.h}</h1>
   <div class="abs kit-assume" style="left:64px;right:64px;top:142px">${icon('shield',22,'#34d399')} TODAY, BEST PRACTICE ON: ${o.assume.map(a=>chip(a,'green')).join('')}</div>
-  <table class="rt abs" style="left:64px;width:1792px;top:210px">
-    <colgroup><col style="width:56px"><col style="width:380px"><col style="width:500px"><col></colgroup>
-    <tr><th>#</th><th>Investigation question</th><th>${icon('search',20)} Generic forensics today</th><th data-in="1" class="thp">${icon('history',20)} Readiness · the artifact that answers it</th></tr>
-    ${o.rows.map((r,i)=>`<tr><td>Q${i+1}</td><td class="rq">${r.q}</td><td>${vd(r.now)}</td><td class="rd" data-in="1">${rdcell(r.rd)}</td></tr>`).join('')}
+  <table class="rt rg abs" style="left:64px;width:1792px;top:206px">
+    <colgroup><col style="width:420px"><col style="width:560px"><col></colgroup>
+    <tr><th>AI investigation question</th><th>${icon('search',20)} Generic forensics today</th><th class="thp">${icon('history',20)} Readiness · the artifact that answers it</th></tr>
+    ${o.rows.map(r=>`<tr><td class="rq"><span class="qtag">${GQ[r.k][0]}</span>${GQ[r.k][1]}</td><td class="nw">${vd(r.now)}</td><td class="rd">${rdcell(r.rd)}</td></tr>`).join('')}
   </table>
-  ${stepSwap([`<div class="callout amber">${o.note0}</div>`,`<div class="callout cyan">${o.note1}</div>`],'','position:absolute;left:64px;right:64px;top:780px')}
-  <div class="abs entnote" data-in="1" style="left:64px;right:64px;top:882px">${ENT_NOTE}</div>`;
+  <div class="abs" style="left:64px;right:64px;top:780px"><div class="callout cyan">${o.note}</div></div>
+  <div class="abs entnote" style="left:64px;right:64px;top:882px">${ENT_NOTE}</div>`;
 }
 
 function defineCase(id,C,s){
   C.score=s.score;
   C.slides=[
     {id:id+'-a',phase:'scenario',cls:'scn',title:C.code+' · workflow → compromise',html:()=>scenario(C,s.scenario),notes:s.scenario.notes},
-    {id:id+'-b',phase:'readiness',title:C.code+' · forensic reach → readiness',html:()=>readiness(C,s.readiness),notes:s.readiness.notes},
+    {id:id+'-b',phase:'readiness',title:C.code+' · forensic gaps → readiness',html:()=>readiness(C,s.readiness),notes:[].concat(s.readiness.notes).join(' ')},
   ];
   DECK.cases[id]=C;
 }
-window.KIT={defineCase,stepSwap,mail,chat,kvcard,logcard,klass,card};
+window.KIT={GQ,defineCase,stepSwap,mail,chat,kvcard,logcard,klass,card};
 })();

@@ -10,11 +10,11 @@ DECK.defaultOrder=['echoleak','comet','postmark','replit'];
 /* scorecard - returns to screen 3's questions; one column per selected case (works for 1-6 cases).
    Verdicts come from each case file: score:{who,act,effect,input,why}: [today, with readiness] */
 const SQ=[
-  ['who','Who acted: the user, the agent, or someone holding its token?'],
-  ['act','Which actions ran, with which arguments?'],
-  ['effect','What was touched, and what left?'],
-  ['input','Which input steered it?'],
-  ['why','Why did the model choose it?'],
+  ['who','<span class="qtag">WHO</span>Who did it?'],
+  ['input','<span class="qtag">HOW</span>How did it get in?'],
+  ['act','<span class="qtag">WHAT</span>What did it do?'],
+  ['effect','<span class="qtag">IMPACT</span>What was touched, what left?'],
+  ['why','<span class="qtag">WHY</span>Why did it act?'],
 ];
 const SV={y:'✔ YES',p:'◐ PARTIAL',n:'✖ NO',na:'N/A'};
 DECK.scorecard=(order)=>({
@@ -30,7 +30,7 @@ DECK.scorecard=(order)=>({
       ${SQ.map(([k,q])=>`<tr class="${k==='why'?'why':''}"><td class="scq">${q}</td>${cases.map(c=>{const s=(c.score||{})[k]||['na','na'];
         return `<td><span class="now ${s[0]}">${SV[s[0]]}</span><span class="rdy ${s[1]}" data-in="1">→ ${SV[s[1]]}</span></td>`;}).join('')}</tr>`).join('')}
     </table>
-    <div class="callout abs" data-in="1" style="left:64px;right:64px;bottom:22px;font-size:24px">Readiness closes most rows. <b>Why the model chose it</b> stays <b class="red">✖ NO → ✖ NO</b> for every case. No vendor exposes the decision path. Preserve inputs and outputs; treat the agent's explanation as testimony.</div>`;
+    <div class="callout abs" data-in="1" style="left:64px;right:64px;bottom:22px;font-size:24px">Readiness closes most rows. <b>Why it acted</b> stays <b class="red">✖ NO → ✖ NO</b> for every case. No vendor exposes the decision path. Preserve inputs and outputs; treat the agent's explanation as testimony.</div>`;
   },
   notes:['Back to the questions from the start, one column per incident we saw. First, what generic forensics answers today.','Now with the readiness artifacts switched on before the incident. Most rows move up. One row does not move for any case: why the model chose it. Nothing we can switch on closes that, so preserve inputs and outputs, and treat what the agent says about itself as testimony.']
 });

@@ -193,3 +193,11 @@ h1.t.rdy-h{font-size:42px;line-height:1.15}
 .shows{font-size:18px;color:var(--muted);margin-top:4px;line-height:1.25}
 .rt.dft td.gap{font-size:20px;line-height:1.3;color:var(--text);background:rgba(255,77,94,.05)}
 .rt.dft td.gap b{color:#fff}
+/* ---------- case screen B: forensic gaps + readiness ---------- */
+.rt.rg td{padding:14px 16px}
+.rt.rg td:first-child{font-family:var(--sans);text-align:left;color:#fff;font-size:23px;padding-left:16px}
+.rt.rg .qtag{color:var(--red2);width:100px}
+.rt.rg td.nw{font-size:21px;color:var(--text2)}
+.rt.rg td.nw .rdw>.vd{width:132px;text-align:center;margin-top:2px}
+.rt.rg td.nw .rdw{display:flex;align-items:flex-start;gap:4px}
+.sc td.scq .qtag{color:var(--red2);width:112px;font-size:20px}
