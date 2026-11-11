@@ -4,18 +4,20 @@ Interactive, clicker-driven talk by **Dor Amit (PALAYA)**. Live: https://palayax
 
 ## Structure (each click is numbered in the top bar: SCREEN NN · CLICK x/y)
 1. Concept + speaker
-2. Statistics + the three questions where agentic-AI forensics has a gap (how did it get in / why did it act / can we reproduce it)
-3. One comparison table: investigation question → answerable? → generic artifact type → why / limitation
-4. The incidents - logos, dates, the forensic gap each case proves, public references
+2. AI breach statistics (IBM Cost of a Data Breach 2026, Gartner)
+3. Digital forensics 101: seven investigation questions (when / who / how / what / impact / why / replay), the classical artifact type that answers each, and a real artifact example
+4. The same seven questions for agentic AI: generic AI artifact, what it shows, and the gap explained
+5. The incidents - logos, dates, the forensic gap each case proves, public references
 
 Each incident = 2 screens:
 - **Workflow → compromise** (3 clicks): normal business workflow with a realistic example → attacker plants / failure starts → **before / after** side by side, with the difference highlighted and everything off the attack path dimmed. Diagram arrows are numbered in story order (neutral = normal flow, red = attack / exfil); a colour legend sits under the diagram; attack edges get a travelling dot and the leaked line types out. Classification strip: attack type, MITRE ATLAS / ATT&CK, OWASP LLM, CVE, impact.
 - **Forensic reach → readiness** (2 clicks): four investigation questions vs what generic forensics answers today (best practice assumed) → one readiness column naming the artifact that answers each question, tagged **ENTERPRISE** (a capability of an enterprise licence: Claude Enterprise / ChatGPT Enterprise Compliance API, OpenTelemetry, managed hooks, or the platform's own enterprise tier) or **EXTERNAL CONTROL** (a non-generic control you add: SWG, DSPM, DB proxy, canaries, AI inventory). Investigation artifacts only, no real-time prevention.
 
 After the cases:
-- **Scorecard** (2 clicks) - built from the selected cases: the questions from screen 3 × each case, verdict today → with readiness. "Why did the model choose it?" stays ✖ NO → ✖ NO for every case.
-- Takeaways · Thank you
+- **Scorecard** (2 clicks) - built from the selected cases: the investigation questions × each case, verdict today → with readiness. "Why did the model choose it?" stays ✖ NO → ✖ NO for every case.
+- Takeaways
 - **Appendix: AI / LLM forensic artifacts poster** (5 screens): an index of every artifact against the scorecard questions, then four reference pages (endpoint files, host/network/identity/cloud, Claude Enterprise, ChatGPT Enterprise / OpenAI). Each artifact has a description, path, the question it answers and a shortened example.
+- Thank you (last screen)
 
 | Case | Agent type | Forensic gap it proves | Primary sources |
 |---|---|---|---|
@@ -26,7 +28,7 @@ After the cases:
 | ForcedLeak - Salesforce Agentforce (Sep 2025) · *backup* | CRM agent | untrusted public input in the agent's context | Noma Labs |
 | GTG-1002 (Nov 2025) · *backup* | Autonomous attack agent | the evidence sits with the AI vendor | Anthropic report · MITRE C0062 |
 
-Default deck: **EchoLeak → Comet → postmark-mcp → Replit** (15 screens + 5 poster screens). ForcedLeak and GTG-1002 are backups: press **S** to choose and order cases, or use `?cases=echoleak,forcedleak,comet,replit,postmark,gtg1002`.
+Default deck: **EchoLeak → Comet → postmark-mcp → Replit** (21 screens incl. the 5-screen poster). ForcedLeak and GTG-1002 are backups: press **S** to choose and order cases, or use `?cases=echoleak,forcedleak,comet,replit,postmark,gtg1002`.
 
 ## Files
 - `js/engine.js` - deck build (intro → agenda → cases → scorecard → outro), reveal steps, rail, presenter view, setup overlay

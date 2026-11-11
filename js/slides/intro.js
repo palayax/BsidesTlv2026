@@ -1,9 +1,10 @@
 /* =========================================================================
-   INTRO - 4 screens:
+   INTRO - 5 screens:
      1 concept + speaker
-     2 statistics + the three questions where agentic-AI DFIR has a gap
-     3 generic AI forensic artifacts: what they can / cannot answer, and why
-     4 the incidents (built by DECK.agenda from the selected cases)
+     2 AI breach statistics
+     3 classical DFIR: the investigation questions, artifact types, real artifact examples
+     4 the same questions for agentic AI: generic AI artifacts and the gap, explained
+     5 the incidents (built by DECK.agenda from the selected cases)
    >>> EDIT SPEAKER DETAILS HERE <<<
    ========================================================================= */
 window.SPEAKER={
@@ -60,68 +61,100 @@ DECK.intro.push({
 });
 
 
-/* 2 - statistics + where agentic forensics has a gap (C6: only the three gap rows) */
+/* 2 - AI breach statistics only.
+   IBM Cost of a Data Breach Report 2026 (Ponemon, 602 orgs, breaches Mar 2025 - Feb 2026), press release 29 Jul 2026;
+   figures marked * are from the report as summarised by Baker Donelson (Aug 2026). Gartner prediction, Oct 2024. */
 DECK.intro.push({
-  id:'questions', title:'Classical vs agentic forensics', section:'Why this matters',
+  id:'stats', title:'AI breaches by the numbers', section:'Why this matters',
   html:()=>{
-    const T={y:'ANSWERED',p:'PARTIAL',n:'GAP'};
-    const R=[
-      ['HOW did it get in?',['y','Exploit, phishing click, malware binary'],['n','Plain-language instructions hidden in data: no binary, no signature']],
-      ['WHY did it act?',['p','Inferred from attacker TTPs and tooling'],['n','Decided inside the model; its "explanation" is generated text']],
-      ['Can we reproduce it?',['y','Detonate the sample in a sandbox'],['n','Non-deterministic; context and model change, no replay']],
+    const big=[
+      ['&gt;20%','of organizations reported a breach of <b>AI models or applications</b>','up from 13% a year earlier','amber'],
+      ['92%','of organizations with an AI-related incident <b>lacked proper AI access controls</b>','IBM 2026*','red'],
+      ['1 in 4','malicious breaches were <b>AI-enabled</b>','+56% year over year','ai'],
     ];
-    const cell=(c,cls)=>`<td class="${cls}"><span class="tg ${c[0]}">${T[c[0]]}</span>${c[1]}</td>`;
-    return `<div class="kicker">Why this matters</div>
-    <h1 class="t" style="font-size:52px">A new actor in the enterprise, <em>new investigation gaps</em></h1>
-    <div class="bigstats" style="margin-top:28px">${stats([
-      {v:'40%',l:'of enterprise apps will have task-specific AI agents by end-2026, up from &lt;5% in 2025 (Gartner)',c:'cyan'},
-      {v:'15%',l:'of day-to-day work decisions made autonomously by agentic AI by 2028 (Gartner)',c:'ai'},
-      {v:'13%',l:'of organizations reported breaches of AI models or apps (IBM 2025)',c:'amber'},
-      {v:'97%',l:'of those breached lacked proper AI access controls (IBM 2025)',c:'red'},
-    ])}</div>
-    <table class="cmp" style="margin-top:26px">
-      <colgroup><col style="width:330px"><col style="width:620px"><col></colgroup>
-      <tr><th>Question</th><th>${icon('search',20)} Classical DFIR</th><th style="color:var(--red2)">${icon('bot',20)} Agentic AI DFIR</th></tr>
-      ${R.map(r=>`<tr><td>${r[0]}</td>${cell(r[1],'cl')}${cell(r[2],'ag')}</tr>`).join('')}
-    </table>
-    <div class="abs" style="left:64px;bottom:16px">${src([['Gartner','press releases 26 Aug 2025 &amp; 21 Oct 2024 (gartner.com/en/newsroom)'],['IBM','Cost of a Data Breach Report 2025, press release 30 Jul 2025 (newsroom.ibm.com)']])}</div>`;
+    const small=[
+      ['$6.0M','average cost of an AI-enabled breach, vs <b>$4.99M</b> global average','IBM 2026','cyan'],
+      ['27%','of breaches of AI systems came through <b>compromised APIs, apps or plug-ins</b>','IBM 2026','red'],
+      ['247 days','mean time to <b>identify and contain</b> a breach, the first rise in five years','IBM 2026*','amber'],
+      ['25%','of enterprise breaches will be traced to <b>AI agent abuse</b> by 2028','Gartner prediction','ai'],
+    ];
+    const tileH=(s,sz)=>`<div class="bstat"><div class="bv ${s[3]}" style="font-size:${sz}px">${s[0]}</div><div class="bl">${s[1]}</div><div class="bs">${s[2]}</div></div>`;
+    return `<div class="kicker">Why this matters · AI breaches</div>
+    <h1 class="t" style="font-size:54px">AI is already <em>in the breach reports</em></h1>
+    <div class="bgrid3">${big.map(s=>tileH(s,104)).join('')}</div>
+    <div class="bgrid4">${small.map(s=>tileH(s,66)).join('')}</div>
+    <div class="abs" style="left:64px;bottom:16px">${src([['IBM','Cost of a Data Breach Report 2026 (Ponemon, 602 organizations), press release 29 Jul 2026 · * figures via Baker Donelson summary'],['Gartner','Top predictions for IT organizations and users, Oct 2024']])}</div>`;
   },
-  notes:'Adoption is real: Gartner and IBM numbers. Classic DFIR still answers what happened and who did it. Three questions break with agents: how it got in has no binary, why it acted lives inside a model, and you cannot replay it.'
+  notes:'IBM\'s 2026 Cost of a Data Breach report: more than one in five organizations had a breach of AI models or applications, up from 13 percent. 92 percent of those had no proper AI access controls. One in four malicious breaches used AI. Breaches into AI systems came through APIs, apps and plug-ins: the same connectors agents use. And it takes 247 days to identify and contain a breach, so evidence has to survive that long. Gartner expects a quarter of enterprise breaches to trace back to AI agent abuse by 2028.'
 });
 
-/* 3 - generic AI artifacts: can / cannot */
+/* the investigation questions shared by screens 3 and 4 */
+const DFQ=[
+  ['WHEN','When did it happen?'],
+  ['WHO','Who did it?'],
+  ['HOW','How did it get in?'],
+  ['WHAT','What did it do?'],
+  ['IMPACT','What was touched, what left?'],
+  ['WHY','Why did it act?'],
+  ['REPLAY','Can we reproduce it?'],
+];
+const qcell=i=>`<td class="dq"><span class="qtag">${DFQ[i][0]}</span>${DFQ[i][1]}</td>`;
+
+/* 3 - classical DFIR: questions, artifact types and real artifact examples (Windows endpoint intrusion) */
 DECK.intro.push({
-  id:'artifacts', title:'What AI artifacts can and cannot answer', section:'Generic AI forensic artifacts',
+  id:'dfir', title:'Classical digital forensics', section:'Digital forensics 101',
   html:()=>{
-    // [question, verdict y/p/n, generic artifact type (icon,name), why / limitation]
     const R=[
-      ['Who used which agent, when, from where?','y',['fingerprint','Identity &amp; admin audit logs'],'Reliable if every session is bound to SSO'],
-      ['Which tools ran, with which arguments?','y',['term','Tool-call logs (hooks, OpenTelemetry)'],'Off by default; the <b>request</b>, not the effect'],
-      ['Which records or files were touched?','y',['cloud','SaaS &amp; cloud audit logs'],'The effect, not which prompt caused it'],
-      ['What did the user ask, what did it reply?','y',['chat','Conversation records (compliance export)'],'Only within retention; not retroactive'],
-      ['Which permissions and tokens did it hold?','y',['key','Connector &amp; OAuth grants'],'Granted scope ≠ scope actually used'],
-      ['Human or agent?','p',['laptop','Endpoint &amp; network telemetry'],'Same identity and token in every SaaS log'],
-      ['What happened past the tool boundary?','p',['plug','Third-party provider logs'],'Agent logs the request; another vendor the effect'],
-      ['Which input steered the action?','n',null,'Retrieved context is not logged whole'],
-      ['Why did the model choose it?','n',null,'No reasoning trace; "explanations" are generated'],
-      ['Would it do it again?','n',null,'Non-deterministic, no replay'],
+      [['clock','File system timeline'],'<span class="k">$MFT</span> invoice.pdf.exe  <span class="k">$SI Created</span> <span class="v">2025-09-02 09:12:44Z</span>  <span class="k">$FN</span> <span class="v">09:12:44Z</span>'],
+      [['fingerprint','Windows Security log'],'<span class="k">EventID</span> 4624  <span class="k">LogonType</span> 10  <span class="k">TargetUserName</span> dana  <span class="k">IpAddress</span> 203.0.113.7'],
+      [['mail','Mark of the Web · mail &amp; proxy logs'],'invoice.pdf.exe<span class="k">:Zone.Identifier</span>  <span class="k">ZoneId</span>=3  <span class="k">HostUrl</span>=https://files.example/inv'],
+      [['term','Execution artifacts (Prefetch, Amcache, Sysmon)'],'<span class="k">Sysmon 1</span>  <span class="k">Image</span> …\\Downloads\\invoice.pdf.exe  <span class="k">ParentImage</span> OUTLOOK.EXE'],
+      [['net','Network &amp; usage (SRUM, firewall, NetFlow)'],'<span class="k">SRUM</span> invoice.pdf.exe  <span class="k">BytesSent</span> 48,210,331  → 198.51.100.24:443'],
+      [['target','Malware reverse engineering + ATT&amp;CK TTPs'],'<span class="k">config</span> C2=198.51.100.24  <span class="k">filter</span> *.docx;*.xlsx  → <span class="v">data theft</span>'],
+      [['pkg','Sample + memory image, sandbox detonation'],'<span class="k">sha256</span> 9f2c…e41  <span class="k">sandbox</span>: same C2 beacon, same file filter'],
+    ];
+    return `<div class="kicker">Digital forensics 101 · a classic endpoint intrusion</div>
+    <h1 class="t" style="font-size:50px">Classical DFIR: <em>every question has an artifact</em></h1>
+    <table class="rt dft abs" style="left:64px;width:1792px;top:130px">
+      <colgroup><col style="width:470px"><col style="width:140px"><col style="width:520px"><col></colgroup>
+      <tr><th>Investigation question</th><th>Answered?</th><th>Artifact type</th><th>Real artifact example</th></tr>
+      ${R.map((r,i)=>`<tr>${qcell(i)}<td><span class="vd y">✔ YES</span></td><td><span class="art2">${tile(r[0][0],36)}${r[0][1]}</span></td><td class="ex2">${r[1]}</td></tr>`).join('')}
+    </table>
+    <div class="callout abs" style="left:64px;right:64px;bottom:22px;font-size:24px">The evidence is <b>deterministic</b>: the binary carries the intent, and the sample can be run again. Every question ends in an artifact you can show in court.</div>`;
+  },
+  notes:'A quick refresher on digital forensics, using a classic endpoint intrusion. When: the MFT timeline. Who: logon event 4624. How it got in: the Mark of the Web on the downloaded file, plus mail and proxy logs. What it did: Prefetch, Amcache, Sysmon process creation. What left: SRUM and network logs. Why: reverse the sample and map its TTPs; the config shows it was after documents. Reproduce: detonate the sample. Seven questions, seven artifacts. Keep these questions in mind.'
+});
+
+/* 4 - the same questions for agentic AI: generic AI artifacts and the gap, explained */
+DECK.intro.push({
+  id:'artifacts', title:'The same questions for agentic AI', section:'Agentic AI forensics',
+  html:()=>{
+    // [verdict, artifact type (icon,name) | null, what it shows, the gap: why]
+    const R=[
+      ['p',['history','Conversation records, tool-call telemetry, SaaS audit'],'Timestamps, if logging was on','Nothing is retroactive: records exist only if logging was <b>switched on before</b> the incident, and local transcripts are deleted after 30 days by default.'],
+      ['p',['fingerprint','Identity &amp; SaaS audit logs'],'The account that acted','The agent uses the <b>user\'s or the app\'s identity</b>. The human, the agent and a thief holding its token all look like the same account.'],
+      ['n',null,'The email, page or ticket, but not as the cause','The "exploit" is <b>plain text inside normal data</b>: no binary, no signature. What the model read is not logged in full, so nothing links that input to the action.'],
+      ['p',['term','Tool-call logs (hooks, OpenTelemetry)'],'The request the agent made','Logs record the <b>request</b>, not what the tool or the next service did with it. Off by default.'],
+      ['p',['cloud','SaaS, cloud, proxy and provider logs'],'Records changed, data sent','The effect is logged by <b>another system</b> (SaaS, browser, email provider) with no ID that joins it back to the agent session.'],
+      ['n',null,'The agent\'s own explanation','The decision happens <b>inside the model</b> and no vendor exposes the decision path. Ask the agent and you get newly generated text: testimony, not evidence.'],
+      ['n',null,'Nothing to run again','<b>No sample to detonate.</b> Models are non-deterministic, context is assembled at run time and the model version changes. Same prompt, different result.'],
     ];
     const V={y:'✔ YES',p:'◐ PARTIAL',n:'✖ NO'};
-    return `<div class="kicker">Generic AI forensic artifacts · assuming they are all switched on</div>
-    <h1 class="t" style="font-size:46px">Which questions the artifacts <em>can</em> answer, and which they <span class="red">can't</span></h1>
-    <table class="rt at abs" style="left:64px;width:1792px;top:128px">
-      <colgroup><col style="width:56px"><col style="width:520px"><col style="width:170px"><col style="width:540px"><col></colgroup>
-      <tr><th>#</th><th>Investigation question</th><th>Answerable?</th><th>Generic artifact type</th><th>Why / limitation</th></tr>
-      ${R.map((r,i)=>`<tr><td>${i+1}</td><td class="rq">${r[0]}</td><td><span class="vd ${r[1]}">${V[r[1]]}</span></td>
-        <td style="${r[2]?'':'color:var(--faint)'}">${r[2]?`<span style="display:inline-flex;align-items:center;gap:12px;color:#fff">${tile(r[2][0],36)}${r[2][1]}</span>`:'No generic artifact records it'}</td>
-        <td>${r[3]}</td></tr>`).join('')}
+    return `<div class="kicker">Agentic AI forensics · generic artifacts, all switched on</div>
+    <h1 class="t" style="font-size:50px">Same questions, agentic AI: <span class="red">where the evidence breaks</span></h1>
+    <table class="rt dft aig abs" style="left:64px;width:1792px;top:134px">
+      <colgroup><col style="width:450px"><col style="width:150px"><col style="width:440px"><col></colgroup>
+      <tr><th>Investigation question</th><th>Answered?</th><th>Generic AI artifact</th><th style="color:var(--red2)">The gap: why it falls short</th></tr>
+      ${R.map((r,i)=>`<tr>${qcell(i)}<td><span class="vd ${r[0]}">${V[r[0]]}</span></td>
+        <td>${r[1]?`<span class="art2">${tile(r[1][0],36)}${r[1][1]}</span>`:'<span class="art2 none">No generic artifact</span>'}<div class="shows">${r[2]}</div></td>
+        <td class="gap">${r[3]}</td></tr>`).join('')}
     </table>
-    <div class="callout abs" style="left:64px;right:64px;bottom:22px;font-size:24px">Artifacts answer the <b>what</b>. Nothing preserves the root cause: an <b>instruction hidden in data</b>, and <b>why</b> the model followed it.</div>`;
+    <div class="callout abs" style="left:64px;right:64px;bottom:22px;font-size:24px">AI artifacts answer <b>when</b> and part of <b>who</b> and <b>what</b>. <b class="red">How it got in, why it acted and replay</b> have no artifact at all.</div>`;
   },
-  notes:'Even with every artifact on, you get the what: who, which tool, which records, what was said. You do not get the why: which input steered it, why the model chose it, whether it repeats, human versus agent, and what happened beyond the tool boundary. We come back to these questions on the scorecard at the end.'
+  notes:'Now the same seven questions for an AI agent, assuming every generic artifact is switched on. When: yes, but only if logging was on before the incident. Who: the agent acts as the user or the app, so every log shows the same account. How it got in: the exploit is plain text in normal data, with no signature and no full record of what the model read. What it did: you see the request, not the effect. Impact: another system logs it, with no join key. Why: inside the model; asking the agent gives you testimony, not evidence. Replay: there is no sample to detonate. The incidents that follow each show one of these gaps.'
 });
 
-/* 4 - incidents (selected cases) */
+/* 5 - incidents (selected cases) */
 DECK.agenda=(order)=>({
   id:'agenda', title:'The incidents', section:'Real incidents · public sources',
   html:()=>{

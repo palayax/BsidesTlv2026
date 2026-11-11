@@ -1,6 +1,6 @@
 /* =========================================================================
    APPENDIX POSTER - AI / LLM forensic artifacts, in the style of a DFIR
-   reference poster. Shown after "Thank you". One index page + four pages.
+   reference poster. Shown just before the closing "Thank you". One index page + four pages.
    Each artifact: description, path, the question it answers, an example.
    Facts checked against vendor docs, Nov 2026:
      code.claude.com/docs (claude-directory, monitoring-usage, managed-settings, hooks, settings-reference)
@@ -200,15 +200,19 @@ const tbl=list=>`<table><colgroup><col style="width:55%">${Object.keys(QK).map((
   <tr><th>Artifact</th>${Object.values(QK).map(v=>`<th>${v}</th>`).join('')}</tr>
   ${list.map(([c,a])=>`<tr class="${CAT[c].cls}"><td><span class="no">${a[0]}</span>${a[1]}</td>${Object.keys(QK).map(k=>`<td>${a[5].includes(k)?'<span class="dot"></span>':k==='why'?'<span class="muted">-</span>':''}</td>`).join('')}</tr>`).join('')}</table>`;
 
-DECK.outro.push({
+const pages=[];
+pages.push({
   id:'poster-index',title:'Poster · index',section:'Appendix · artifacts poster',
   html:()=>`${head(1,'Which artifact answers <em>which question</em>')}
   <div class="pix">${tbl(rows.slice(0,half))}${tbl(rows.slice(half))}</div>`,
   notes:'Appendix: a reference poster of AI and LLM forensic artifacts, generic and proprietary. Every artifact answers who, what or which input. The WHY column is empty on every row.'
 });
-['gen','host','cla','oai'].forEach((c,i)=>DECK.outro.push({
+['gen','host','cla','oai'].forEach((c,i)=>pages.push({
   id:'poster-'+c,title:'Poster · '+CAT[c].tag.toLowerCase(),section:'Appendix · artifacts poster',
   html:()=>`${head(i+2,CAT[c].h)}<div class="pst-grid">${A[c].map(a=>card(c,a)).join('')}</div>`,
   notes:'Reference page: '+CAT[c].tag+'. Each box gives the description, the path, the question it answers and a shortened example.'
 }));
+/* poster goes before "Thank you", which stays the last screen */
+const ti=DECK.outro.findIndex(s=>s.id==='thanks');
+DECK.outro.splice(ti<0?DECK.outro.length:ti,0,...pages);
 })();

@@ -167,3 +167,29 @@ h1.t.rdy-h{font-size:42px;line-height:1.15}
 .src{font-size:18px}
 .kicker .tag{font-size:18px}
 .legend .enum{font-size:18px}
+
+/* ---------- intro: AI breach statistics ---------- */
+.bgrid3{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:34px}
+.bgrid4{display:grid;grid-template-columns:repeat(4,1fr);gap:22px;margin-top:22px}
+.bstat{background:#0b1523;border:1px solid var(--line);border-radius:14px;padding:22px 26px 18px;display:flex;flex-direction:column;gap:8px}
+.bgrid3 .bstat{min-height:310px}
+.bv{font-weight:800;letter-spacing:-.03em;line-height:1;color:#fff}
+.bv.amber{color:var(--amber)} .bv.red{color:var(--red)} .bv.ai{color:var(--ai)} .bv.cyan{color:var(--cyan)}
+.bl{font-size:25px;line-height:1.3;color:var(--text2)} .bl b{color:#fff}
+.bgrid4 .bl{font-size:21px}
+.bs{margin-top:auto;font-family:var(--mono);font-size:18px;color:var(--muted)}
+/* ---------- intro: DFIR question tables (classical vs agentic) ---------- */
+.rt.dft{border-spacing:0 7px}
+.rt.dft td{padding:10px 14px;font-size:21px}
+.rt.dft:not(.aig) td{padding:17px 16px}
+.rt.dft.aig{border-spacing:0 6px} .rt.dft.aig td{padding:8px 14px}
+.rt.dft td.dq{font-weight:700;color:#fff;font-size:22px;border-left:1px solid var(--line);border-radius:10px 0 0 10px;font-family:var(--sans);text-align:left;padding-left:14px}
+.qtag{display:inline-block;width:92px;font-family:var(--mono);font-size:18px;font-weight:800;color:var(--cyan);letter-spacing:.04em}
+.aig .qtag{color:var(--red2)}
+.art2{display:inline-flex;align-items:center;gap:12px;color:#fff;line-height:1.2}
+.art2.none{color:var(--faint);font-style:italic}
+.rt.dft td.ex2{font-family:var(--mono);font-size:18px;line-height:1.35;color:var(--text2)}
+.ex2 .k{color:var(--cyan)} .ex2 .v{color:var(--amber)}
+.shows{font-size:18px;color:var(--muted);margin-top:4px;line-height:1.25}
+.rt.dft td.gap{font-size:20px;line-height:1.3;color:var(--text);background:rgba(255,77,94,.05)}
+.rt.dft td.gap b{color:#fff}
