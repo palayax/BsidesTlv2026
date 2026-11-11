@@ -54,13 +54,12 @@ readiness:{
   h:'The richest evidence sits <em>with the AI vendor</em>',
   assume:['EDR / NDR / WAF everywhere','Auth logs on APIs, DBs, registries','Database audit','Long SIEM retention'],
   rows:[
-    {k:'who',now:['n','Looks like a human pentester; the operator\'s account sits at the AI vendor'],rd:['p',[['ext','<b>Vendor threat-intel</b> notification, agreed in contract'],['ent','Own staff: SSO-bound Claude · ChatGPT accounts + <b>Compliance API</b>']]]},
-    {k:'what',now:['p','Scans, logins and a new DB user; not the full target list'],rd:['p',[['ext','<b>WAF / NDR</b> logs kept ≥ 1 year for late notification']]]},
-    {k:'impact',now:['p','Auth logs show attempts, not which credentials were real'],rd:['y',[['ext','<b>Canary credentials</b> in configs &amp; registries: exact times']]]},
+    {k:'who',now:['n','Looks like a human pentester; the operator\'s account sits at the AI vendor']},
+    {k:'what',now:['p','Scans, logins and a new DB user; not the full target list']},
+    {k:'impact',now:['p','Auth logs show attempts, not which credentials were real']},
   ],
-  note:'For the attacker\'s agent: canaries and vendor notification. For your own tenant, enterprise accounts make agent use investigable.',
-  notes:'Victims can reconstruct scans, logins, new accounts and queries, but not who was behind them, the target list, or that it was AI. Readiness on the victim side is external: long-retention WAF and NDR logs, canary credentials, vendor notification terms. For your own staff, SSO-bound enterprise accounts with Compliance API records and OpenTelemetry give the full chain.'
-},
-score:{who:['n','p'],act:['p','p'],effect:['p','y'],input:['n','n'],why:['n','n']}
+  note:'Victims can rebuild the <b>effects</b>. Who was behind it, the target list, even the fact it was AI: that lives only with the <b>vendor</b>.',
+  notes:'Victims can reconstruct scans, logins, new accounts and queries, but not who was behind them, the target list, or that it was AI.'
+}
 });
 })();

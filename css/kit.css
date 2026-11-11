@@ -151,17 +151,6 @@ h1.t.rdy-h{font-size:42px;line-height:1.15}
 .bk{font-family:var(--mono);font-size:18px;color:var(--muted);border:1px solid var(--line2);border-radius:5px;padding:0 8px;margin-left:10px}
 
 /* ---------- scorecard ---------- */
-.sc{width:100%;border-collapse:separate;border-spacing:8px 14px;table-layout:fixed;margin-left:-8px}
-.sc th{font-family:var(--mono);font-size:20px;color:var(--text);text-align:center;font-weight:700;padding:4px 6px;vertical-align:bottom;line-height:1.25}
-.sc th .logo-tile{margin:0 auto 6px;display:flex}
-.sc th:first-child{text-align:left;color:var(--muted);letter-spacing:.08em}
-.sc td{background:#0b1523;border:1px solid var(--line);border-radius:10px;padding:18px 10px;text-align:center;vertical-align:middle;font-family:var(--mono);font-weight:700;font-size:24px;line-height:1.35}
-.sc td.scq{font-family:var(--sans);text-align:left;color:#fff;font-size:28px;font-weight:700;line-height:1.2;background:transparent;border:none;padding-left:0}
-.sc .now{display:block;opacity:.95}
-.sc .rdy{display:block;margin-top:2px}
-.sc .y{color:var(--green)} .sc .p{color:var(--amber)} .sc .n{color:var(--red2)} .sc .na{color:var(--faint)}
-.sc tr.why td{border-color:rgba(255,77,94,.55);background:rgba(255,77,94,.08)}
-.sc tr.why td.scq{background:transparent;border:none;color:var(--red2)}
 
 /* ---------- small-label floor (>= 18px) for shared app.css classes ---------- */
 .src{font-size:18px}
@@ -200,4 +189,8 @@ h1.t.rdy-h{font-size:42px;line-height:1.15}
 .rt.rg td.nw{font-size:21px;color:var(--text2)}
 .rt.rg td.nw .rdw>.vd{width:132px;text-align:center;margin-top:2px}
 .rt.rg td.nw .rdw{display:flex;align-items:flex-start;gap:4px}
-.sc td.scq .qtag{color:var(--red2);width:112px;font-size:20px}
+/* case screen B, gaps only: two columns, larger type */
+.rt.rg td{padding:24px 22px}
+.rt.rg td:first-child{font-size:27px}
+.rt.rg td.nw{font-size:25px;line-height:1.3}
+.rt.rg td.nw .rdw>.vd{width:150px;font-size:20px}

@@ -170,7 +170,7 @@ DECK.agenda=(order)=>({
       ${many?`<div style="font-size:22px;color:var(--ai);line-height:1.3">${c.agentType}</div>`:`<div style="font-size:22px;color:var(--text2);line-height:1.3">${c.tagline}</div>`}
       <div class="refs" style="margin-top:auto"><div><span>↗ ${c.refs[0][0]}</span>${c.refs[0][1]}</div></div></div>`}).join('')}
     </div>
-    <div class="abs mono" style="left:64px;bottom:16px;display:flex;gap:12px;align-items:center;font-size:18px;color:var(--muted)">Each incident · 2 screens: <span class="chip cyan" style="font-size:18px">Normal</span>›<span class="chip red" style="font-size:18px">Attack</span>›<span class="chip red" style="font-size:18px">Before / after</span> &nbsp;then&nbsp; <span class="chip amber" style="font-size:18px">Forensic gaps → readiness</span></div>`;
+    <div class="abs mono" style="left:64px;bottom:16px;display:flex;gap:12px;align-items:center;font-size:18px;color:var(--muted)">Each incident · 2 screens: <span class="chip cyan" style="font-size:18px">Normal</span>›<span class="chip red" style="font-size:18px">Attack</span>›<span class="chip red" style="font-size:18px">Before / after</span> &nbsp;then&nbsp; <span class="chip amber" style="font-size:18px">Forensic gaps</span></div>`;
   },
   notes:'The incidents. Each is real and publicly documented, with references on screen and in the repo. Each one proves a different forensic gap, shown on every card and on each case screen.'
 });

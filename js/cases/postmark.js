@@ -51,14 +51,13 @@ readiness:{
   h:'The agent\'s log was <em>truthful</em>, and useless',
   assume:['MCP host logs &amp; transcripts','Lockfiles / package cache','EDR','Postmark activity (45 days)'],
   rows:[
-    {k:'how',now:['p','Lockfile shows v1.0.16; nothing flags the one-line Bcc'],rd:['y',[['ext','<b>AI-BOM / MCP inventory</b> collected by EDR or MDM']]]},
-    {k:'who',now:['n','No ID links each copied email to an agent session'],rd:['y',[['ent','Managed <b>PostToolUse hook</b> logs each MCP call + response: join on Message-ID']]]},
-    {k:'what',now:['p','Agent log shows "send_email → sent": the request, not the Bcc'],rd:['y',[['ent','<b>OTel</b> <span class="mono">tool_decision</span> + <span class="mono">tool_result</span>: what ran, who approved']]]},
-    {k:'impact',now:['p','Provider activity shows the Bcc, for 45 days only'],rd:['y',[['ext','<b>Provider outbound logs / webhooks</b> to SIEM, kept longer']]]},
+    {k:'how',now:['p','The lockfile shows v1.0.16; nothing flags the one-line Bcc']},
+    {k:'who',now:['n','No ID links each copied email to an agent session']},
+    {k:'what',now:['p','The agent log shows "send_email → sent": the request, not the Bcc']},
+    {k:'impact',now:['p','Provider activity shows the Bcc, for 45 days only']},
   ],
-  note:'Readiness = log <b>both</b> sides with a join key: provider logs kept long enough, agent tool calls with their results.',
-  notes:'The agent recorded the request; only the email provider saw the effect, and only for 45 days. How it got in, which session sent each email, what really ran and what left are all partial or open. Readiness: an AI-BOM of MCP servers from EDR or MDM, provider logs kept longer, and Claude Code or Codex telemetry plus a managed hook that logs every MCP call with its response, so the Message-ID joins the two sides.'
-},
-score:{who:['n','y'],act:['p','y'],effect:['p','y'],input:['p','y'],why:['n','n']}
+  note:'The agent recorded the <b>request</b>; only the provider saw the <b>effect</b>, for 45 days. Without a shared ID, the two cannot be joined.',
+  notes:'The agent recorded the request; only the email provider saw the effect, and only for 45 days. How it got in, which session sent each email, what really ran and what left are all partial or open.'
+}
 });
 })();

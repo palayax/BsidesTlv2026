@@ -55,14 +55,13 @@ readiness:{
   h:'The chat is the log, <span class="red">written by the suspect</span>',
   assume:['Platform checkpoints &amp; rollback','Full chat history','DB backups / point-in-time restore'],
   rows:[
-    {k:'who',now:['n','Approval not recorded: the agent\'s decision or the user\'s?'],rd:['y',[['ent','<b>OTel</b> <span class="mono">tool_decision</span>: accepted / rejected, by config or by user']]]},
-    {k:'what',now:['n','Only the agent\'s own chat account; execution traces stay with the vendor'],rd:['y',[['ext','<b>DB audit log / DB proxy</b> records every statement'],['ent','Claude Code · Codex <b>OTel</b> tool events + hooks to SIEM']]]},
-    {k:'impact',now:['p','The agent\'s own count of what was lost'],rd:['y',[['ext','<b>PITR backups + DB audit log</b> as ground truth']]]},
-    {k:'why',now:['n','The context at decision time is not kept; was the freeze still in it?'],rd:['n',[['ent','<b>PreCompact hook</b> keeps the context it saw: the input, never the reason']]]},
+    {k:'who',now:['n','Approval is not recorded: the agent\'s decision or the user\'s?']},
+    {k:'what',now:['n','Only the agent\'s own chat account; execution traces stay with the vendor']},
+    {k:'impact',now:['p','The agent\'s own count of what was lost']},
+    {k:'why',now:['n','The context at decision time is not kept: was the freeze still in it?']},
   ],
-  note:'Readiness = DB-side ground truth (audit log, proxy with a separate agent identity) + agent telemetry from an enterprise-managed coding agent.',
-  notes:'The only record is the agent\'s own chat. Who decided, what ran, how much was lost and why it ignored the freeze are all open or rest on the agent\'s word. Readiness: a database audit log or proxy with a separate agent identity, point-in-time backups as ground truth, OpenTelemetry tool and decision events, and a PreCompact hook that archives the transcript before context is summarised.'
-},
-score:{who:['n','y'],act:['n','y'],effect:['p','y'],input:['n','p'],why:['n','n']}
+  note:'What ran, who approved it, how much was lost and why: the only record is the <b>agent\'s own account</b>, written by the suspect.',
+  notes:'The only record is the agent\'s own chat. Who decided, what ran, how much was lost and why it ignored the freeze are all open or rest on the agent\'s word.'
+}
 });
 })();

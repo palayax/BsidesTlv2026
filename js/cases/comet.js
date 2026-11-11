@@ -58,14 +58,13 @@ readiness:{
   h:'Every log shows <em>the employee</em>. <span class="red">None shows the agent.</span>',
   assume:['Browser history','Google Workspace audit','IdP sign-in logs','EDR on the laptop'],
   rows:[
-    {k:'who',now:['p','Every log shows the employee: same session, IP and device'],rd:['y',[['ext','<b>Enterprise browser</b> telemetry marks agent-driven tabs'],['ent','Claude in Chrome: session transcripts in the <b>Compliance API</b>']]]},
-    {k:'how',now:['n','Page content is not kept, and the comment can be deleted'],rd:['p',[['ext','<b>Browser isolation / SWG</b> page capture'],['ent','Agent transcript holds the page text it read']]]},
-    {k:'what',now:['p','Browser history; the visits look like the user\'s own'],rd:['y',[['ext','<b>SWG / enterprise browser</b> logs with full URLs'],['ent','<b>Compliance API</b> activity feed, kept 6 years']]]},
-    {k:'impact',now:['n','A public reply posted from the user\'s own account'],rd:['p',[['ext','<b>SWG</b> logging form posts and full URLs'],['ent','Agent transcript shows the text it posted']]]},
+    {k:'who',now:['p','Every log shows the employee: same session, IP and device']},
+    {k:'how',now:['n','Page content is not kept, and the comment can be deleted']},
+    {k:'what',now:['p','Browser history; the visits look like the user\'s own']},
+    {k:'impact',now:['n','A public reply posted from the user\'s own account']},
   ],
-  note:'Readiness = agent sessions held by the AI vendor under an enterprise account, plus browser or SWG logs. A consumer agentic browser gives you neither.',
-  notes:'Assume browser history, Workspace audit, IdP and EDR. Every record points at the employee: same session, same IP, same device. Who did it, how it got in, what it did and what left all stay partly or fully open. Readiness: an enterprise browser or SWG that logs full URLs and marks agent-driven tabs, page capture, and, for Claude in Chrome under an Enterprise account, session transcripts and the activity feed in the Compliance API.'
-},
-score:{who:['p','y'],act:['p','y'],effect:['n','p'],input:['n','p'],why:['n','n']}
+  note:'Gmail, the IdP and browser history all show <b>the employee</b>. Nothing records that <b>an agent</b> drove the session, or which page told it to.',
+  notes:'Assume browser history, Workspace audit, IdP and EDR. Every record points at the employee: same session, same IP, same device. Who did it, how it got in, what it did and what left all stay partly or fully open.'
+}
 });
 })();

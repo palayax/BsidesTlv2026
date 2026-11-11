@@ -58,13 +58,12 @@ readiness:{
   h:'The lead record is evidence. <span class="red">The leak is not.</span>',
   assume:['Shield Event Monitoring','Field Audit Trail','Einstein Trust Layer audit data','Setup Audit Trail'],
   rows:[
-    {k:'how',now:['p','The lead text is stored, but nothing marks it as an instruction'],rd:['y',[['ext','<b>DSPM</b> semantic scan of free-text fields, results kept'],['ent','<b>Shield Field Audit Trail</b>: field history, long retention']]]},
-    {k:'what',now:['p','Agent audit data shows a session read the lead'],rd:['y',[['ent','<b>Einstein Trust Layer</b> audit data, retained and exported'],['ent','Same workflow on Claude · ChatGPT: <b>Compliance API</b> joined on record ID']]]},
-    {k:'impact',now:['n','The image was fetched by the rep\'s browser, outside CRM logs'],rd:['p',[['ext','<b>SWG / browser telemetry</b> logging full image URLs']]]},
+    {k:'how',now:['p','The lead text is stored, but nothing marks it as an instruction']},
+    {k:'what',now:['p','Agent audit data shows a session read the lead, not what it did with it']},
+    {k:'impact',now:['n','The image was fetched by the rep\'s browser, outside CRM logs']},
   ],
-  note:'Readiness = Trust Layer audit data or conversation archive + full-URL browser / proxy logs + a semantic scan of what agents read.',
-  notes:'With Shield, Field Audit Trail and Trust Layer data you can find the poisoned lead and the session that read it, but not what left, because the leak was a browser image request. Readiness: Trust Layer audit data retained, or Compliance API records joined on the CRM record ID on Claude or ChatGPT Enterprise, full-URL web logs, and a semantic scan of the free text agents read.'
-},
-score:{who:['p','y'],act:['p','y'],effect:['n','p'],input:['p','y'],why:['n','n']}
+  note:'Best practice finds the <b>poisoned lead</b> and the <b>session</b>. The exfiltration happened in the <b>browser</b>, outside every Salesforce log.',
+  notes:'With Shield, Field Audit Trail and Trust Layer data you can find the poisoned lead and the session that read it, but not what left, because the leak was a browser image request.'
+}
 });
 })();

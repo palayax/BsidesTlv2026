@@ -11,12 +11,11 @@ Interactive, clicker-driven talk by **Dor Amit (PALAYA)**. Live: https://palayax
 
 Each incident = 2 screens:
 - **Workflow → compromise** (3 clicks): normal business workflow with a realistic example → attacker plants / failure starts → **before / after** side by side, with the difference highlighted and everything off the attack path dimmed. Diagram arrows are numbered in story order (neutral = normal flow, red = attack / exfil); a colour legend sits under the diagram; attack edges get a travelling dot and the leaked line types out. Classification strip: attack type, MITRE ATLAS / ATT&CK, OWASP LLM, CVE, impact.
-- **Forensic gaps → readiness** (1 screen, no extra click): only the AI-related investigation questions that generic forensics answers partly or not at all, phrased like the generic questions on the intro screens (WHO / HOW / WHAT / IMPACT / WHY), with today's verdict and why → one readiness column naming the artifact that answers each question, tagged **ENTERPRISE** (a capability of an enterprise licence: Claude Enterprise / ChatGPT Enterprise Compliance API, OpenTelemetry, managed hooks, or the platform's own enterprise tier) or **EXTERNAL CONTROL** (a non-generic control you add: SWG, DSPM, DB proxy, canaries, AI inventory). Investigation artifacts only, no real-time prevention.
+- **Forensic gaps** (1 screen, no extra click): only the AI-related investigation questions that generic forensics answers partly or not at all, phrased like the generic questions on the intro screens (WHO / HOW / WHAT / IMPACT / WHY), with today's verdict and why it falls short.
 
 After the cases:
-- **Scorecard** (2 clicks) - built from the selected cases: the investigation questions × each case, verdict today → with readiness, using the same generic questions. "Why did it act?" stays ✖ NO → ✖ NO for every case.
 - Takeaways
-- **Appendix: AI / LLM forensic artifacts poster** (5 screens): an index of every artifact against the scorecard questions, then four reference pages (endpoint files, host/network/identity/cloud, Claude Enterprise, ChatGPT Enterprise / OpenAI). Each artifact has a description, path, the question it answers and a shortened example.
+- **Appendix: AI / LLM forensic artifacts poster** (6 screens): two index screens (generic, then proprietary) with one card per artifact: name, short description, example value, and the questions it answers (WHO / HOW / WHAT / IMPACT / WHY). Then four detail pages (endpoint files, host/network/identity/cloud, Claude Enterprise, ChatGPT Enterprise / OpenAI) with description, path, question and a shortened example.
 - Thank you (last screen)
 
 | Case | Agent type | Forensic gap it proves | Primary sources |
@@ -28,16 +27,16 @@ After the cases:
 | ForcedLeak - Salesforce Agentforce (Sep 2025) · *backup* | CRM agent | untrusted public input in the agent's context | Noma Labs |
 | GTG-1002 (Nov 2025) · *backup* | Autonomous attack agent | the evidence sits with the AI vendor | Anthropic report · MITRE C0062 |
 
-Default deck: **EchoLeak → Comet → postmark-mcp → Replit** (21 screens incl. the 5-screen poster). ForcedLeak and GTG-1002 are backups: press **S** to choose and order cases, or use `?cases=echoleak,forcedleak,comet,replit,postmark,gtg1002`.
+Default deck: **EchoLeak → Comet → postmark-mcp → Replit** (21 screens incl. the 6-screen poster). ForcedLeak and GTG-1002 are backups: press **S** to choose and order cases, or use `?cases=echoleak,forcedleak,comet,replit,postmark,gtg1002`.
 
 ## Files
-- `js/engine.js` - deck build (intro → agenda → cases → scorecard → outro), reveal steps, rail, presenter view, setup overlay
+- `js/engine.js` - deck build (intro → agenda → cases → outro), reveal steps, rail, presenter view, setup overlay
 - `js/components.js` - `UI.diagram` (numbered edges `n`, port offsets `fo`/`tp`, `both`, travelling dots), icons, tiles, chips
-- `js/casekit.js` - `KIT.defineCase(id, meta, {scenario, readiness, score})`: the two case screens
-- `js/cases/*.js` - one file per incident (facts, examples, readiness rows, scorecard verdicts)
-- `js/slides/intro.js`, `js/slides/outro.js` - intro screens + agenda; scorecard, takeaways, thanks, default order
+- `js/casekit.js` - `KIT.defineCase(id, meta, {scenario, readiness})`: the two case screens (workflow → compromise, forensic gaps)
+- `js/cases/*.js` - one file per incident (facts, examples, forensic-gap rows)
+- `js/slides/intro.js`, `js/slides/outro.js` - intro screens + agenda; takeaways, thanks, default order
 - `js/slides/poster.js`, `css/poster.css` - the artifacts poster appendix (sources listed at the top of the file)
-- `css/app.css` (base theme), `css/kit.css` (case kit, intro tables, agenda, scorecard)
+- `css/app.css` (base theme), `css/kit.css` (case kit, intro tables, agenda)
 
 ## Controls
 | Key | Action |

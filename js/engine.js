@@ -7,7 +7,7 @@
    ========================================================================= */
 (function(){
 // rail pills: [label, phase, fromStep, toStep, attackStyle]
-const PILLS=[['Normal workflow','scenario',0,0],['Attack','scenario',1,1,1],['Before / after','scenario',2,99,1],['Forensic gaps → readiness','readiness',0,99]];
+const PILLS=[['Normal workflow','scenario',0,0],['Attack','scenario',1,1,1],['Before / after','scenario',2,99,1],['Forensic gaps','readiness',0,99]];
 const PHORDER=['scenario','readiness'];
 const LS_KEY='bsides26-cases';
 const isPresenter=new URLSearchParams(location.search).has('presenter');
@@ -28,7 +28,6 @@ function build(){
   DECK.intro.forEach(s=>add(s));
   if(DECK.agenda) add(DECK.agenda(order));
   order.forEach((id,i)=>{const c=DECK.cases[id]; c.slides.forEach(s=>add(s,{caseId:id,caseNo:i+1,caseMeta:c}));});
-  if(DECK.scorecard&&order.length) add(DECK.scorecard(order));
   DECK.outro.forEach(s=>add(s));
 }
 
