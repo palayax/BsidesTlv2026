@@ -53,19 +53,23 @@ DECK.outro.push({
 DECK.outro.push({
   id:'thanks', title:'Thank you', section:'Thank you',
   html:()=>`
-  <div class="abs" style="left:64px;top:120px;width:1100px">
+  <div class="abs" style="left:64px;top:70px;width:740px">
     <div class="kicker">BSides TLV 2026 <span class="tag">AI VILLAGE</span></div>
     <h1 class="t" style="font-size:110px">Thank you<span class="red">.</span></h1>
     <div class="sub" style="font-size:34px;margin-top:24px">Questions?</div>
-    <div style="margin-top:60px;font-size:34px;color:#fff;font-weight:800">${SPEAKER.name}</div>
+    <div style="margin-top:70px;font-size:34px;color:#fff;font-weight:800">${SPEAKER.name}</div>
     <div class="sub" style="font-size:24px;margin-top:6px">${SPEAKER.role}</div>
     <div class="mono cyan" style="margin-top:22px;font-size:22px">${SPEAKER.handle}</div>
-    <div class="mono muted" style="margin-top:14px;font-size:20px">Slides &amp; sources: palayax.github.io/BsidesTlv2026</div>
+    <img src="${SPEAKER.logo}" alt="PALAYA" style="height:120px;margin-top:40px">
   </div>
-  <div class="abs" style="right:110px;top:170px;display:flex;flex-direction:column;align-items:center;gap:28px">
-    <div style="width:380px;height:440px;border-radius:24px;border:2px solid var(--line2);background:#0d1828 url('${SPEAKER.photo}') center 20%/cover"></div>
-    <img src="${SPEAKER.logo}" alt="PALAYA" style="height:110px">
+  <div class="abs" style="left:850px;top:40px;width:580px;display:flex;flex-direction:column;align-items:center;gap:18px">
+    <div style="width:580px;height:580px;padding:14px;border-radius:24px;background:#fff;box-shadow:0 0 0 2px var(--line2),0 20px 60px rgba(0,0,0,.5)"><img src="assets/img/qr-deck.svg" alt="QR code: palayax.github.io/BsidesTlv2026" style="width:100%;height:100%;display:block"></div>
+    <div style="font-size:26px;color:#fff;font-weight:700;text-align:center;line-height:1.3">Scan for the slides, every source<br>and the forensic artifacts poster</div>
+    <div class="mono cyan" style="font-size:24px">palayax.github.io/BsidesTlv2026</div>
+  </div>
+  <div class="abs" style="right:64px;top:120px">
+    <div style="width:380px;height:460px;border-radius:24px;border:2px solid var(--line2);background:#0d1828 url('${SPEAKER.photo}') center 20%/cover"></div>
   </div>`,
-  notes:'Thank you. Sources for every case are on the incident slide and in the repo.'
+  notes:'Thank you. Scan the code for the slides, every source and the forensic artifacts poster.'
 });
 })();

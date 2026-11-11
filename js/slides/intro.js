@@ -12,7 +12,7 @@ window.SPEAKER={
   role:'Owner, PALAYA Ltd · Co-Founder, TenRoot Cyber Security',
   org:'PALAYA',
   photo:'assets/img/speaker.jpg',
-  logo:'assets/img/palaya-logo.png',
+  logo:'assets/img/palaya-logo.png?v=2',
   handle:'palaya.net · linkedin.com/in/dor-amit-7791397',
   bio:[
     '~20 years as a white-hat hacker &amp; security researcher',
