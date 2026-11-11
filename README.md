@@ -15,7 +15,7 @@ Each incident = 2 screens:
 
 After the cases:
 - Takeaways
-- **Appendix: AI / LLM forensic artifacts poster** (6 screens): two index screens (generic, then proprietary) with one card per artifact: name, short description, example value, and the questions it answers (WHO / HOW / WHAT / IMPACT / WHY). Then four detail pages (endpoint files, host/network/identity/cloud, Claude Enterprise, ChatGPT Enterprise / OpenAI) with description, path, question and a shortened example.
+- **Appendix: AI / LLM forensic artifacts poster** (4 screens): endpoint files, host/network/identity/cloud, Claude Enterprise, ChatGPT Enterprise / OpenAI. Each artifact has a description, path, the questions it answers (WHO / HOW / WHAT / IMPACT / WHY) and a shortened example.
 - Thank you (last screen)
 
 | Case | Agent type | Forensic gap it proves | Primary sources |
@@ -27,7 +27,7 @@ After the cases:
 | ForcedLeak - Salesforce Agentforce (Sep 2025) · *backup* | CRM agent | untrusted public input in the agent's context | Noma Labs |
 | GTG-1002 (Nov 2025) · *backup* | Autonomous attack agent | the evidence sits with the AI vendor | Anthropic report · MITRE C0062 |
 
-Default deck: **EchoLeak → Comet → postmark-mcp → Replit** (21 screens incl. the 6-screen poster). ForcedLeak and GTG-1002 are backups: press **S** to choose and order cases, or use `?cases=echoleak,forcedleak,comet,replit,postmark,gtg1002`.
+Default deck: **EchoLeak → Comet → postmark-mcp → Replit** (19 screens incl. the 4-screen poster). ForcedLeak and GTG-1002 are backups: press **S** to choose and order cases, or use `?cases=echoleak,forcedleak,comet,replit,postmark,gtg1002`.
 
 ## Files
 - `js/engine.js` - deck build (intro → agenda → cases → outro), reveal steps, rail, presenter view, setup overlay

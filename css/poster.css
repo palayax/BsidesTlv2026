@@ -25,16 +25,3 @@
 .ptag{display:inline-block;font-family:var(--mono);font-size:15px;font-weight:700;padding:1px 8px;border-radius:5px;color:#06101c;background:var(--pc);white-space:nowrap}
 /* categories */
 .pc-gen{--pc:#22d3ee} .pc-host{--pc:#34d399} .pc-cla{--pc:#d97757} .pc-oai{--pc:#10a37f}
-/* index pages: one card per artifact */
-.ix{position:absolute;left:64px;right:64px;top:142px;bottom:16px;display:grid;grid-template-columns:1fr 1fr;gap:26px}
-.ixcol{display:flex;flex-direction:column;gap:9px;min-width:0}
-.ixcat{margin-bottom:2px}
-.ixcat .ptag{font-size:17px}
-.ixc{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:center;gap:4px;background:#0a1320;border:1px solid var(--line);border-left:5px solid var(--pc);border-radius:10px;padding:8px 14px}
-.ixh{display:flex;align-items:center;gap:10px;min-width:0}
-.ixh b{font-size:21px;color:#fff;font-weight:800;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ixc .no{font-family:var(--mono);font-weight:800;font-size:17px;color:#06101c;background:var(--pc);border-radius:5px;padding:0 7px}
-.ixq{display:flex;gap:4px;flex:none}
-.ixq .qk{font-size:14px;padding:0 5px}
-.ixd{font-size:18px;color:var(--text2);line-height:1.25}
-.ixe{font-family:var(--mono);font-size:16px;color:var(--amber);line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}

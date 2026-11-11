@@ -1,6 +1,6 @@
 /* =========================================================================
    APPENDIX POSTER - AI / LLM forensic artifacts, in the style of a DFIR
-   reference poster. Shown just before the closing "Thank you". Two index pages + four detail pages.
+   reference poster. Shown just before the closing "Thank you". Four pages.
    Each artifact: description, path, the question it answers, an example.
    Facts checked against vendor docs, Nov 2026:
      code.claude.com/docs (claude-directory, monitoring-usage, managed-settings, hooks, settings-reference)
@@ -191,50 +191,14 @@ const card=(c,a)=>{const [id,t,os,d,paths,qs,q,ex,lim]=a;
   </div>`;};
 
 const key=`<div class="pst-key"><span class="ptag pc-gen">GENERIC · ENDPOINT</span><span class="ptag pc-host">GENERIC · HOST / NET / CLOUD</span><span class="ptag pc-cla">CLAUDE ENT.</span><span class="ptag pc-oai">CHATGPT ENT.</span></div>`;
-const NP=6;
+const NP=4;
 const head=(n,h)=>`<div class="pst-head"><div class="kicker">Appendix · AI / LLM forensic artifacts poster <span class="tag">${n} / ${NP}</span><span class="tag">examples shortened</span>${key}</div><h1 class="t">${h}</h1></div>`;
 
-/* index pages: one card per artifact - name, short description, example value, the questions it answers */
-const SHORT={
- G1:['Every prompt, reply and tool call, one file per session','"name":"Bash","input":{"command":"psql -c \\"DROP TABLE …\\""}'],
- G2:['Typed prompts with time; each file as it was before an edit','"display":"clean up the old tables","project":"C:\\\\repo\\\\billing"'],
- G3:['Per-session JSONL: prompts, tool calls, approvals','"type":"function_call","name":"shell","arguments":"rm -rf …"'],
- G4:['VS Code Copilot Chat files and Cursor SQLite chat history','cursorDiskKV → composerData:<id> · bubbleId:<id>:<id>'],
- G5:['Which tools the agent could call, and each MCP server\'s log','"postmark": {"command":"npx","args":["postmark-mcp"]}'],
- G6:['Commits written together with an AI agent','Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>'],
- H1:['Commands the agent spawned, under which user','claude.exe → bash.exe -c "psql … DROP TABLE …"  user=dana'],
- H2:['Which AI conversations a user opened, and when','https://claude.ai/chat/2f1c…  ·  https://chatgpt.com/c/68b1…'],
- H3:['AI service use, and data hidden inside URLs','GET https://<allowed-domain>/i.png?d=Q3_4.2M_14Oct  user=dana'],
- H4:['Which AI apps hold tokens to your data, with which scopes','Consent to application: "AI Meeting Notes"  Mail.Read'],
- H5:['Which mails and files Copilot accessed for an answer','"Operation":"CopilotInteraction","AppHost":"Outlook"'],
- H6:['Which identity sent which prompt to which model','"identity":{"arn":"…:role/support-agent"},"modelId":"anthropic.claude-…"'],
- C1:['Chat content, files and projects, exported to your SIEM','chat 2f1c… · dana@acme.example · "Summarize the Q3 plan"'],
- C2:['Who did what in Claude, kept 6 years','{"actor":"dana@acme.example","created_at":"2026-09-02T09:14:07Z"}'],
- C3:['Claude Code, Cowork and Claude in Chrome sessions','session · Claude in Chrome · navigate reddit.com/r/sysadmin/…'],
- C4:['Admin and settings events, 180 days, no content','created_at,event,actor_email · 2026-09-01T08:02:11Z,…'],
- C5:['Tool decisions and results, sent to your collector','claude_code.tool_decision tool_name=Bash decision=accept'],
- C6:['Enforced telemetry, and hooks that log every tool call','"PostToolUse": [ … /opt/audit/log-tool.sh … ]'],
- O1:['ChatGPT messages and files; 30-day window on the API','conversation 68b1… · user "Draft the customer reply"'],
- O2:['Codex activity for users signed in with ChatGPT','CODEX_LOG · dana@acme.example · task "fix failing billing tests"'],
- O3:['Sign-ins, admin changes and connected apps','AUDIT_LOG actor=owner@acme.example change: Codex policy'],
- O4:['Codex tool decisions and results, opt-in','codex.tool_decision tool=shell decision=approved'],
- O5:['API keys, projects and users; never content','{"type":"api_key.created","effective_at":1756800000}'],
- O6:['IDs that link agent records to their effects','session_id · transcript_path · conversation ID · Message-ID'],
-};
-const ixcard=(c,a)=>`<div class="ixc ${CAT[c].cls}"><div class="ixh"><span class="no">${a[0]}</span><b>${a[1]}</b><span class="ixq">${Object.keys(QK).map(k=>`<span class="qk ${a[5].includes(k)?'on':''}">${QK[k]}</span>`).join('')}</span></div>
-  <div class="ixd">${esc(SHORT[a[0]][0])}</div><div class="ixe">${esc(SHORT[a[0]][1])}</div></div>`;
-const ixcol=c=>`<div class="ixcol"><div class="ixcat ${CAT[c].cls}"><span class="ptag">${CAT[c].tag}</span></div>${A[c].map(a=>ixcard(c,a)).join('')}</div>`;
-
 const pages=[];
-[['gen','host','Generic artifacts: which one answers <em>which question</em>'],['cla','oai','Proprietary artifacts: which one answers <em>which question</em>']].forEach(([c1,c2,h],i)=>pages.push({
-  id:'poster-index-'+(i+1),title:'Poster · index '+(i+1),section:'Appendix · artifacts poster',
-  html:()=>`${head(i+1,h)}<div class="ix">${ixcol(c1)}${ixcol(c2)}</div>`,
-  notes:i===0?'Appendix: a reference poster of AI forensic artifacts. First the generic ones, available with any licence: what each one is, an example value, and which investigation questions it answers. None of them answers WHY.':'The proprietary ones: Claude Enterprise and managed Claude Code, ChatGPT Enterprise, Codex and the OpenAI platform. Again, WHY stays unanswered everywhere.'
-}));
 ['gen','host','cla','oai'].forEach((c,i)=>pages.push({
   id:'poster-'+c,title:'Poster · '+CAT[c].tag.toLowerCase(),section:'Appendix · artifacts poster',
-  html:()=>`${head(i+3,CAT[c].h)}<div class="pst-grid">${A[c].map(a=>card(c,a)).join('')}</div>`,
-  notes:'Reference page: '+CAT[c].tag+'. Each box gives the description, the path, the question it answers and a shortened example.'
+  html:()=>`${head(i+1,CAT[c].h)}<div class="pst-grid">${A[c].map(a=>card(c,a)).join('')}</div>`,
+  notes:(i===0?'Appendix: a reference poster of AI forensic artifacts, generic and proprietary. ':'')+'Reference page: '+CAT[c].tag+'. Each box gives the description, the path, the question it answers and a shortened example.'
 }));
 /* poster goes before "Thank you", which stays the last screen */
 const ti=DECK.outro.findIndex(s=>s.id==='thanks');
